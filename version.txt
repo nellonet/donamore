@@ -1,1 +1,1 @@
-nopcommerce 4.6.3 version
+nopcommerce 4.60.4 version

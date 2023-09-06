@@ -17,7 +17,7 @@
     },
     {
       "SystemName": "Misc.Sendinblue",
-      "Version": "3.56"
+      "Version": "3.57"
     },
     {
       "SystemName": "Misc.WebApi.Frontend",
@@ -65,7 +65,7 @@
     },
     {
       "SystemName": "Widgets.FacebookPixel",
-      "Version": "2.02"
+      "Version": "2.03"
     },
     {
       "SystemName": "Widgets.GoogleAnalytics",
