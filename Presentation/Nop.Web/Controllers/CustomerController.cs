@@ -88,6 +88,7 @@ namespace Nop.Web.Controllers
         private readonly IPermissionService _permissionService;
         private readonly IPictureService _pictureService;
         private readonly IPriceFormatter _priceFormatter;
+        private readonly IProductModelFactory _productModelFactory;
         private readonly IProductService _productService;
         private readonly IStateProvinceService _stateProvinceService;
         private readonly IStoreContext _storeContext;
@@ -1573,6 +1574,80 @@ namespace Nop.Web.Controllers
             //If we got this far, something failed, redisplay form
             await _addressModelFactory.PrepareAddressModelAsync(model.Address,
                 address: address,
+                excludeProperties: true,
+                addressSettings: _addressSettings,
+                loadCountries: async () => await _countryService.GetAllCountriesAsync((await _workContext.GetWorkingLanguageAsync()).Id),
+                overrideAttributesXml: customAttributes);
+
+            return View(model);
+        }
+
+        #endregion
+
+        #region My account / Products
+
+        public virtual async Task<IActionResult> Products()
+        {
+            if (!await _customerService.IsRegisteredAsync(await _workContext.GetCurrentCustomerAsync()))
+                return Challenge();
+
+            var model = await _customerModelFactory.PrepareCustomerAddressListModelAsync();
+
+            return View(model);
+        }
+
+        public virtual async Task<IActionResult> ProductAdd()
+        {
+            if (!await _customerService.IsRegisteredAsync(await _workContext.GetCurrentCustomerAsync()))
+                return Challenge();
+
+            var model = new CustomerProductEditModel();
+            await _productModelFactory.PrepareCustomerProductModelAsync(model.Product,
+                product: null,
+                excludeProperties: false);
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public virtual async Task<IActionResult> ProductAdd(CustomerAddressEditModel model, IFormCollection form)
+        {
+            var customer = await _workContext.GetCurrentCustomerAsync();
+            if (!await _customerService.IsRegisteredAsync(customer))
+                return Challenge();
+
+            //custom address attributes
+            var customAttributes = await _addressAttributeParser.ParseCustomAddressAttributesAsync(form);
+            var customAttributeWarnings = await _addressAttributeParser.GetAttributeWarningsAsync(customAttributes);
+            foreach (var error in customAttributeWarnings)
+            {
+                ModelState.AddModelError("", error);
+            }
+
+            if (ModelState.IsValid)
+            {
+                var address = model.Address.ToEntity();
+                address.CustomAttributes = customAttributes;
+                address.CreatedOnUtc = DateTime.UtcNow;
+                //some validation
+                if (address.CountryId == 0)
+                    address.CountryId = null;
+                if (address.StateProvinceId == 0)
+                    address.StateProvinceId = null;
+
+
+                await _addressService.InsertAddressAsync(address);
+
+                await _customerService.InsertCustomerAddressAsync(customer, address);
+
+                _notificationService.SuccessNotification(await _localizationService.GetResourceAsync("Account.CustomerAddresses.Added"));
+
+                return RedirectToRoute("CustomerAddresses");
+            }
+
+            //If we got this far, something failed, redisplay form
+            await _addressModelFactory.PrepareAddressModelAsync(model.Address,
+                address: null,
                 excludeProperties: true,
                 addressSettings: _addressSettings,
                 loadCountries: async () => await _countryService.GetAllCountriesAsync((await _workContext.GetWorkingLanguageAsync()).Id),

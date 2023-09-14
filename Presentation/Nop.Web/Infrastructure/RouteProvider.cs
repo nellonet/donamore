@@ -76,6 +76,10 @@ namespace Nop.Web.Infrastructure
                 pattern: $"{lang}/customer/addresses",
                 defaults: new { controller = "Customer", action = "Addresses" });
 
+            endpointRouteBuilder.MapControllerRoute(name: "CustomerProducts",
+                pattern: $"{lang}/customer/products",
+                defaults: new { controller = "Customer", action = "Products" });
+
             endpointRouteBuilder.MapControllerRoute(name: "CustomerOrders",
                 pattern: $"{lang}/order/history",
                 defaults: new { controller = "Order", action = "CustomerOrders" });
@@ -359,6 +363,10 @@ namespace Nop.Web.Infrastructure
             endpointRouteBuilder.MapControllerRoute(name: "CustomerAddressAdd",
                 pattern: $"{lang}/customer/addressadd",
                 defaults: new { controller = "Customer", action = "AddressAdd" });
+
+            endpointRouteBuilder.MapControllerRoute(name: "CustomerProductAdd",
+               pattern: $"{lang}/customer/productadd",
+               defaults: new { controller = "Customer", action = "ProductAdd" });
 
             endpointRouteBuilder.MapControllerRoute(name: "CustomerMultiFactorAuthenticationProviderConfig",
                 pattern: $"{lang}/customer/providerconfig",

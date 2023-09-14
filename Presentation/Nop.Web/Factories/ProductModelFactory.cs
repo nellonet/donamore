@@ -2001,6 +2001,82 @@ namespace Nop.Web.Factories
             return model;
         }
 
+
+        /// <summary>
+        /// Prepare address model
+        /// </summary>
+        /// <param name="model">Address model</param>
+        /// <param name="product">Address entity</param>
+        /// <param name="excludeProperties">Whether to exclude populating of model properties from the entity</param>
+        /// <param name="productEditorSettings">Address settings</param>       
+        /// <param name="prePopulateWithCustomerFields">Whether to populate model properties with the customer fields (used with the customer entity)</param>
+        /// <param name="customer">Customer entity; required if prePopulateWithCustomerFields is true</param>
+        /// <param name="overrideAttributesXml">Overridden address attributes in XML format; pass null to use CustomAttributes of the address entity</param>
+        /// <returns>A task that represents the asynchronous operation</returns>
+        public virtual async Task PrepareCustomerProductModelAsync(CustomerProductModel model,
+            Product product, bool excludeProperties,            
+            bool prePopulateWithCustomerFields = false,
+            Customer customer = null,
+            string overrideAttributesXml = "")
+        {
+            if (model == null)
+                throw new ArgumentNullException(nameof(model));
+
+            //if (productEditorSettings == null)
+            //    throw new ArgumentNullException(nameof(productEditorSettings));
+
+            if (!excludeProperties && product != null)
+            {
+                model.Id = product.Id;
+            }
+
+            //if (product == null && prePopulateWithCustomerFields)
+            //{
+            //    if (customer == null)
+            //        throw new Exception("Customer cannot be null when prepopulating an address");
+            //    model.Email = customer.Email;
+            //    model.FirstName = customer.FirstName;
+            //    model.LastName = customer.LastName;
+            //    model.Company = customer.Company;
+            //    model.Address1 = customer.StreetAddress;
+            //    model.Address2 = customer.StreetAddress2;
+            //    model.ZipPostalCode = customer.ZipPostalCode;
+            //    model.City = customer.City;
+            //    model.County = customer.County;
+            //    model.PhoneNumber = customer.Phone;
+            //    model.FaxNumber = customer.Fax;
+            //}
+
+            //form fields
+            //model.CompanyEnabled = addressSettings.CompanyEnabled;
+            //model.CompanyRequired = addressSettings.CompanyRequired;
+            //model.StreetAddressEnabled = addressSettings.StreetAddressEnabled;
+            //model.StreetAddressRequired = addressSettings.StreetAddressRequired;
+            //model.StreetAddress2Enabled = addressSettings.StreetAddress2Enabled;
+            //model.StreetAddress2Required = addressSettings.StreetAddress2Required;
+            //model.ZipPostalCodeEnabled = addressSettings.ZipPostalCodeEnabled;
+            //model.ZipPostalCodeRequired = addressSettings.ZipPostalCodeRequired;
+            //model.CityEnabled = addressSettings.CityEnabled;
+            //model.CityRequired = addressSettings.CityRequired;
+            //model.CountyEnabled = addressSettings.CountyEnabled;
+            //model.CountyRequired = addressSettings.CountyRequired;
+            //model.CountryEnabled = addressSettings.CountryEnabled;
+            //model.StateProvinceEnabled = addressSettings.StateProvinceEnabled;
+            //model.PhoneEnabled = addressSettings.PhoneEnabled;
+            //model.PhoneRequired = addressSettings.PhoneRequired;
+            //model.FaxEnabled = addressSettings.FaxEnabled;
+            //model.FaxRequired = addressSettings.FaxRequired;
+
+            //customer attribute services
+            if (_productAttributeService != null)
+            {
+               // await PrepareCustomProductAttributesAsync(model, product, overrideAttributesXml);
+            }
+            //if (_addressAttributeFormatter != null && address != null)
+            //{
+            //    model.FormattedCustomAddressAttributes = await _addressAttributeFormatter.FormatAttributesAsync(address.CustomAttributes);
+            //}
+        }
         #endregion
     }
 }

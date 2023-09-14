@@ -27,6 +27,7 @@ namespace Nop.Web.Models.Customer
     {
         Info = 0,
         Addresses = 10,
+        CustomerProducts = 11,
         Orders = 20,
         BackInStockSubscriptions = 30,
         ReturnRequests = 40,

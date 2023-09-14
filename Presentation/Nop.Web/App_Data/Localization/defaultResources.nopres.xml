@@ -132,6 +132,9 @@
   <LocaleResource Name="Account.CustomerAddresses">
     <Value>Addresses</Value>
   </LocaleResource>
+  <LocaleResource Name="Account.CustomerProducts">
+    <Value>Products</Value>
+  </LocaleResource>
   <LocaleResource Name="Account.CustomerAddresses.AddNew">
     <Value>Add new address</Value>
   </LocaleResource>

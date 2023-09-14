@@ -585,7 +585,7 @@ namespace Nop.Web.Factories
         /// </returns>
         public virtual async Task<CustomerNavigationModel> PrepareCustomerNavigationModelAsync(int selectedTabId = 0)
         {
-            var model = new CustomerNavigationModel();
+            var model = new CustomerNavigationModel();          
 
             model.CustomerNavigationItems.Add(new CustomerNavigationItemModel
             {
@@ -602,6 +602,25 @@ namespace Nop.Web.Factories
                 Tab = (int)CustomerNavigationEnum.Addresses,
                 ItemClass = "customer-addresses"
             });
+
+            model.CustomerNavigationItems.Add(new CustomerNavigationItemModel
+            {
+                RouteName = "CustomerProducts",
+                Title = await _localizationService.GetResourceAsync("Account.CustomerProducts"),
+                Tab = (int)CustomerNavigationEnum.CustomerProducts,
+                ItemClass = "customer-products"
+            });
+
+            if (!_customerSettings.HideDownloadableProductsTab)
+            {
+                model.CustomerNavigationItems.Add(new CustomerNavigationItemModel
+                {
+                    RouteName = "CustomerDownloadableProducts",
+                    Title = await _localizationService.GetResourceAsync("Account.DownloadableProducts"),
+                    Tab = (int)CustomerNavigationEnum.DownloadableProducts,
+                    ItemClass = "downloadable-products"
+                });
+            }
 
             model.CustomerNavigationItems.Add(new CustomerNavigationItemModel
             {
@@ -625,18 +644,7 @@ namespace Nop.Web.Factories
                     Tab = (int)CustomerNavigationEnum.ReturnRequests,
                     ItemClass = "return-requests"
                 });
-            }
-
-            if (!_customerSettings.HideDownloadableProductsTab)
-            {
-                model.CustomerNavigationItems.Add(new CustomerNavigationItemModel
-                {
-                    RouteName = "CustomerDownloadableProducts",
-                    Title = await _localizationService.GetResourceAsync("Account.DownloadableProducts"),
-                    Tab = (int)CustomerNavigationEnum.DownloadableProducts,
-                    ItemClass = "downloadable-products"
-                });
-            }
+            }          
 
             if (!_customerSettings.HideBackInStockSubscriptionsTab)
             {

@@ -1,8 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Nop.Core.Domain.Catalog;
+using Nop.Core.Domain.Common;
+using Nop.Core.Domain.Customers;
 using Nop.Core.Domain.Orders;
+using Nop.Web.Areas.Admin.Models.Catalog;
 using Nop.Web.Models.Catalog;
+using Nop.Web.Models.Common;
 
 namespace Nop.Web.Factories
 {
@@ -104,5 +109,22 @@ namespace Nop.Web.Factories
         /// The task result contains the product specification model
         /// </returns>
         Task<ProductSpecificationModel> PrepareProductSpecificationModelAsync(Product product);
+
+        /// <summary>
+        /// Prepare product model
+        /// </summary>
+        /// <param name="model">Product model</param>
+        /// <param name="product">Product entity</param>
+        /// <param name="excludeProperties">Whether to exclude populating of model properties from the entity</param>
+        /// <param name="productEditorSettings">Address settings</param>        
+        /// <param name="prePopulateWithCustomerFields">Whether to populate model properties with the customer fields (used with the customer entity)</param>
+        /// <param name="customer">Customer entity; required if prePopulateWithCustomerFields is true</param>
+        /// <param name="overrideAttributesXml">Overridden address attributes in XML format; pass null to use CustomAttributes of the address entity</param>
+        /// <returns>A task that represents the asynchronous operation</returns>
+        Task PrepareCustomerProductModelAsync(CustomerProductModel model,
+            Product product, bool excludeProperties,            
+            bool prePopulateWithCustomerFields = false,
+            Customer customer = null,
+            string overrideAttributesXml = "");
     }
 }
