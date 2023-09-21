@@ -32,6 +32,7 @@ using Nop.Services.Vendors;
 using Nop.Web.Infrastructure.Cache;
 using Nop.Web.Models.Catalog;
 using Nop.Web.Models.Common;
+using Nop.Web.Models.Customer;
 using Nop.Web.Models.Media;
 
 namespace Nop.Web.Factories
@@ -2007,8 +2008,7 @@ namespace Nop.Web.Factories
         /// </summary>
         /// <param name="model">Address model</param>
         /// <param name="product">Address entity</param>
-        /// <param name="excludeProperties">Whether to exclude populating of model properties from the entity</param>
-        /// <param name="productEditorSettings">Address settings</param>       
+        /// <param name="excludeProperties">Whether to exclude populating of model properties from the entity</param>        
         /// <param name="prePopulateWithCustomerFields">Whether to populate model properties with the customer fields (used with the customer entity)</param>
         /// <param name="customer">Customer entity; required if prePopulateWithCustomerFields is true</param>
         /// <param name="overrideAttributesXml">Overridden address attributes in XML format; pass null to use CustomAttributes of the address entity</param>

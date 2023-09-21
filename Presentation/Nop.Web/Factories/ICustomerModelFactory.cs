@@ -91,6 +91,15 @@ namespace Nop.Web.Factories
         Task<CustomerAddressListModel> PrepareCustomerAddressListModelAsync();
 
         /// <summary>
+        /// Prepare the customer product list model
+        /// </summary>
+        /// <returns>
+        /// A task that represents the asynchronous operation
+        /// The task result contains the customer product list model  
+        /// </returns>
+        Task<CustomerProductListModel> PrepareCustomerProductListModelAsync();
+
+        /// <summary>
         /// Prepare the customer downloadable products model
         /// </summary>
         /// <returns>

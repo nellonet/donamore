@@ -7,7 +7,7 @@ using Nop.Core.Domain.Customers;
 using Nop.Core.Domain.Orders;
 using Nop.Web.Areas.Admin.Models.Catalog;
 using Nop.Web.Models.Catalog;
-using Nop.Web.Models.Common;
+using Nop.Web.Models.Customer;
 
 namespace Nop.Web.Factories
 {

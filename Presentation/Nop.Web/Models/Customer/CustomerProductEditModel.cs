@@ -1,5 +1,4 @@
 ﻿using Nop.Web.Framework.Models;
-using Nop.Web.Models.Common;
 
 namespace Nop.Web.Models.Customer
 {

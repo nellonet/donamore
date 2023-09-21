@@ -30,6 +30,7 @@ using Nop.Services.Orders;
 using Nop.Services.Stores;
 using Nop.Services.Tax;
 using Nop.Web.Areas.Admin.Infrastructure.Mapper.Extensions;
+using Nop.Web.Areas.Admin.Models.Catalog;
 using Nop.Web.Areas.Admin.Models.Common;
 using Nop.Web.Areas.Admin.Models.Customers;
 using Nop.Web.Areas.Admin.Models.ShoppingCart;
@@ -364,6 +365,26 @@ namespace Nop.Web.Areas.Admin.Factories
             addressHtmlSb.Append("</div>");
 
             model.AddressHtml = addressHtmlSb.ToString();
+        }
+
+
+        /// <summary>
+        /// Prepare HTML string address
+        /// </summary>
+        /// <param name="model">Address model</param>
+        /// <param name="address">Address</param>
+        /// <returns>A task that represents the asynchronous operation</returns>
+        protected virtual async Task PrepareModelProductHtmlAsync(ProductModel model, Product product)
+        {
+            if (model == null)
+                throw new ArgumentNullException(nameof(model));
+
+            var productHtmlSb = new StringBuilder("<div>");
+
+            productHtmlSb.Append("ciao dal Customer Model Factory1");
+            productHtmlSb.Append("</div>");
+
+            model.ProductHtml = productHtmlSb.ToString();
         }
 
         /// <summary>
@@ -924,6 +945,46 @@ namespace Nop.Web.Areas.Admin.Factories
                     await PrepareModelAddressHtmlAsync(addressModel, address);
 
                     return addressModel;
+                });
+            });
+
+            return model;
+        }
+
+        /// <summary>
+        /// Prepare paged customer product list model
+        /// </summary>
+        /// <param name="searchModel">Customer product search model</param>
+        /// <param name="customer">Customer</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation
+        /// The task result contains the customer address list model
+        /// </returns>
+        public virtual async Task<ProductListModel> PrepareCustomerProductListModelAsync(ProductSearchModel searchModel, Customer customer)
+        {
+            if (searchModel == null)
+                throw new ArgumentNullException(nameof(searchModel));
+
+            if (customer == null)
+                throw new ArgumentNullException(nameof(customer));
+
+            //get customer products
+            var products = (await _customerService.GetProductsByCustomerIdAsync(customer.Id))
+                .OrderByDescending(product => product.CreatedOnUtc).ThenByDescending(product => product.Id).ToList()
+                .ToPagedList(searchModel);
+
+            //prepare list model
+            var model = await new ProductListModel().PrepareToGridAsync(searchModel, products, () =>
+            {
+                return products.SelectAwait(async product =>
+                {
+                    //fill in model values from the entity        
+                    var productModel = product.ToModel<ProductModel>();                                      
+
+                    //fill in additional values (not existing in the entity)
+                    await PrepareModelProductHtmlAsync(productModel, product);
+
+                    return productModel;
                 });
             });
 

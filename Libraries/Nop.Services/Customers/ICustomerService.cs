@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Nop.Core;
+using Nop.Core.Domain.Catalog;
 using Nop.Core.Domain.Common;
 using Nop.Core.Domain.Customers;
 using Nop.Core.Domain.Orders;
@@ -591,6 +592,16 @@ namespace Nop.Services.Customers
         /// The task result contains the 
         /// </returns>
         Task<IList<Address>> GetAddressesByCustomerIdAsync(int customerId);
+
+        /// <summary>
+        /// Gets a list of products mapped to customer
+        /// </summary>
+        /// <param name="customerId">Customer identifier</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation
+        /// The task result contains the 
+        /// </returns>
+        Task<IList<Product>> GetProductsByCustomerIdAsync(int customerId);
 
         /// <summary>
         /// Gets a address mapped to customer

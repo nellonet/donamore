@@ -477,6 +477,10 @@ namespace Nop.Web.Areas.Admin.Models.Catalog
 
         public ProductAttributeCombinationSearchModel ProductAttributeCombinationSearchModel { get; set; }
 
+        //product in HTML format (usually used in grids)
+        [NopResourceDisplayName("Admin.Product")]
+        public string ProductHtml { get; set; }
+
         #endregion
     }
 

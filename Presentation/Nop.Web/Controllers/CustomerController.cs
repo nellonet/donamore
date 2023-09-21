@@ -1591,7 +1591,7 @@ namespace Nop.Web.Controllers
             if (!await _customerService.IsRegisteredAsync(await _workContext.GetCurrentCustomerAsync()))
                 return Challenge();
 
-            var model = await _customerModelFactory.PrepareCustomerAddressListModelAsync();
+            var model = await _customerModelFactory.PrepareCustomerProductListModelAsync();
 
             return View(model);
         }

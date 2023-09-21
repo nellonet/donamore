@@ -30,6 +30,7 @@ using Nop.Services.Orders;
 using Nop.Services.Security;
 using Nop.Services.Seo;
 using Nop.Services.Stores;
+using Nop.Web.Areas.Admin.Models.Catalog;
 using Nop.Web.Models.Common;
 using Nop.Web.Models.Customer;
 
@@ -56,6 +57,7 @@ namespace Nop.Web.Factories
         private readonly ICountryService _countryService;
         private readonly ICustomerAttributeParser _customerAttributeParser;
         private readonly ICustomerAttributeService _customerAttributeService;
+        private readonly IProductModelFactory _productModelFactory;
         private readonly ICustomerService _customerService;
         private readonly IDateTimeHelper _dateTimeHelper;
         private readonly IExternalAuthenticationService _externalAuthenticationService;
@@ -95,6 +97,7 @@ namespace Nop.Web.Factories
             ForumSettings forumSettings,
             GdprSettings gdprSettings,
             IAddressModelFactory addressModelFactory,
+            IProductModelFactory productModelFactory,
             IAuthenticationPluginManager authenticationPluginManager,
             ICountryService countryService,
             ICustomerAttributeParser customerAttributeParser,
@@ -135,6 +138,7 @@ namespace Nop.Web.Factories
             _forumSettings = forumSettings;
             _gdprSettings = gdprSettings;
             _addressModelFactory = addressModelFactory;
+            _productModelFactory = productModelFactory;
             _authenticationPluginManager = authenticationPluginManager;
             _countryService = countryService;
             _customerAttributeParser = customerAttributeParser;
@@ -787,6 +791,31 @@ namespace Nop.Web.Factories
         }
 
         /// <summary>
+        /// Prepare the customer product list model
+        /// </summary>
+        /// <returns>
+        /// A task that represents the asynchronous operation
+        /// The task result contains the customer jproduct list model
+        /// </returns>
+        public virtual async Task<CustomerProductListModel> PrepareCustomerProductListModelAsync()
+        {
+            var customer = await _workContext.GetCurrentCustomerAsync();          
+
+            var products = await (await _customerService.GetProductsByCustomerIdAsync(customer.Id)).ToListAsync();
+
+            var model = new CustomerProductListModel();
+            foreach (var product in products)
+            {
+                var productModel = new CustomerProductModel();
+                await _productModelFactory.PrepareCustomerProductModelAsync(productModel,
+                    product: product,
+                    excludeProperties: false);
+                model.Products.Add(productModel);
+            }
+            return model;
+        }
+
+        /// <summary>
         /// Prepare the customer downloadable products model
         /// </summary>
         /// <returns>
@@ -1075,7 +1104,7 @@ namespace Nop.Web.Factories
             }
 
             return result;
-        }
+        }       
 
         #endregion
     }

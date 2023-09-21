@@ -149,7 +149,41 @@ namespace Nop.Services.Customers
         /// {0} : customer identifier
         /// </remarks>
         public static string CustomerAddressesByCustomerPrefix => "Nop.customer.addresses.{0}";
-        
+
+        #endregion
+
+        #region Product
+
+        /// <summary>
+        /// Gets a key for caching
+        /// </summary>
+        /// <remarks>
+        /// {0} : customer identifier
+        /// </remarks>
+        public static CacheKey CustomerProductsCacheKey => new("Nop.customer.products.{0}", CustomerProductsPrefix);
+
+        /// <summary>
+        /// Gets a key for caching
+        /// </summary>
+        /// <remarks>
+        /// {0} : customer identifier
+        /// {1} : address identifier
+        /// </remarks>
+        public static CacheKey CustomerProductCacheKey => new("Nop.customer.products.{0}-{1}", CustomerProductsByCustomerPrefix, CustomerProductsPrefix);
+
+        /// <summary>
+        /// Gets a key pattern to clear cache
+        /// </summary>
+        public static string CustomerProductsPrefix => "Nop.customer.products.";
+
+        /// <summary>
+        /// Gets a key pattern to clear cache
+        /// </summary>
+        /// <remarks>
+        /// {0} : customer identifier
+        /// </remarks>
+        public static string CustomerProductsByCustomerPrefix => "Nop.customer.products.{0}";
+
         #endregion
 
         #region Customer password

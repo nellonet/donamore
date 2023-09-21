@@ -45,6 +45,7 @@ namespace Nop.Services.Customers
         private readonly IRepository<GenericAttribute> _gaRepository;
         private readonly IRepository<NewsComment> _newsCommentRepository;
         private readonly IRepository<Order> _orderRepository;
+        private readonly IRepository<Product> _productRepository;
         private readonly IRepository<ProductReview> _productReviewRepository;
         private readonly IRepository<ProductReviewHelpfulness> _productReviewHelpfulnessRepository;
         private readonly IRepository<PollVotingRecord> _pollVotingRecordRepository;
@@ -72,6 +73,7 @@ namespace Nop.Services.Customers
             IRepository<GenericAttribute> gaRepository,
             IRepository<NewsComment> newsCommentRepository,
             IRepository<Order> orderRepository,
+            IRepository<Product> productRepository,
             IRepository<ProductReview> productReviewRepository,
             IRepository<ProductReviewHelpfulness> productReviewHelpfulnessRepository,
             IRepository<PollVotingRecord> pollVotingRecordRepository,
@@ -95,6 +97,7 @@ namespace Nop.Services.Customers
             _gaRepository = gaRepository;
             _newsCommentRepository = newsCommentRepository;
             _orderRepository = orderRepository;
+            _productRepository = productRepository;
             _productReviewRepository = productReviewRepository;
             _productReviewHelpfulnessRepository = productReviewHelpfulnessRepository;
             _pollVotingRecordRepository = pollVotingRecordRepository;
@@ -1611,6 +1614,30 @@ namespace Nop.Services.Customers
                         select address;
 
             var key = _staticCacheManager.PrepareKeyForShortTermCache(NopCustomerServicesDefaults.CustomerAddressesCacheKey, customerId);
+
+            return await _staticCacheManager.GetAsync(key, async () => await query.ToListAsync());
+        }
+
+        /// <summary>
+        /// Gets a list of addresses mapped to customer
+        /// </summary>
+        /// <param name="customerId">Customer identifier</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation
+        /// The task result contains the result
+        /// </returns>
+        public virtual async Task<IList<Product>> GetProductsByCustomerIdAsync(int customerId)
+        {
+            var VendorId = from cust in _customerRepository.Table
+                           where cust.VendorId == customerId
+                           select cust.VendorId;
+
+
+            var query = from Product in _productRepository.Table                        
+                        where Product.VendorId == VendorId.FirstOrDefault()
+                        select Product;
+
+            var key = _staticCacheManager.PrepareKeyForShortTermCache(NopCustomerServicesDefaults.CustomerProductsCacheKey, customerId);
 
             return await _staticCacheManager.GetAsync(key, async () => await query.ToListAsync());
         }
