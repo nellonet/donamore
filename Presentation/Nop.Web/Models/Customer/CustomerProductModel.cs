@@ -10,11 +10,16 @@ namespace Nop.Web.Models.Customer
     public partial record CustomerProductModel : BaseNopEntityModel
     {
         public CustomerProductModel()
-        {           
+        {   
+            
         }
 
-        [NopResourceDisplayName("Product.Fields.Description")]
-        public string Description { get; set; }        
-                
+        [NopResourceDisplayName("Product.Fields.Name")]
+        public string Name { get; set; }
+
+        public bool ProductPublished { get; set; }
+
+
+
     }
 }

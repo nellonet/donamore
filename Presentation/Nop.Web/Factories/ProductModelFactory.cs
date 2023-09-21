@@ -2028,12 +2028,13 @@ namespace Nop.Web.Factories
             if (!excludeProperties && product != null)
             {
                 model.Id = product.Id;
+                model.Name = product.Name;
             }
 
-            //if (product == null && prePopulateWithCustomerFields)
-            //{
-            //    if (customer == null)
-            //        throw new Exception("Customer cannot be null when prepopulating an address");
+            if (product == null && prePopulateWithCustomerFields)
+            {
+                if (customer == null)
+                    throw new Exception("Customer cannot be null when prepopulating a Campaign");
             //    model.Email = customer.Email;
             //    model.FirstName = customer.FirstName;
             //    model.LastName = customer.LastName;
@@ -2045,10 +2046,10 @@ namespace Nop.Web.Factories
             //    model.County = customer.County;
             //    model.PhoneNumber = customer.Phone;
             //    model.FaxNumber = customer.Fax;
-            //}
+            }
 
             //form fields
-            //model.CompanyEnabled = addressSettings.CompanyEnabled;
+            model.ProductPublished = product.Published;
             //model.CompanyRequired = addressSettings.CompanyRequired;
             //model.StreetAddressEnabled = addressSettings.StreetAddressEnabled;
             //model.StreetAddressRequired = addressSettings.StreetAddressRequired;
