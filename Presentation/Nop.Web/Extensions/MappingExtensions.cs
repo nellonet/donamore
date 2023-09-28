@@ -1,5 +1,7 @@
-﻿using Nop.Core.Domain.Common;
+﻿using Nop.Core.Domain.Catalog;
+using Nop.Core.Domain.Common;
 using Nop.Web.Models.Common;
+using Nop.Web.Models.Customer;
 
 namespace Nop.Web.Extensions
 {
@@ -60,6 +62,32 @@ namespace Nop.Web.Extensions
             destination.PhoneNumber = model.PhoneNumber;
             destination.FaxNumber = model.FaxNumber;
 
+            return destination;
+        }
+
+        //product
+        public static Product ToEntity(this CustomerProductModel model, bool trimFields = true)
+        {
+            if (model == null)
+                return null;
+
+            var entity = new Product();
+            return ToEntity(model, entity, trimFields);
+        }
+
+        public static Product ToEntity(this CustomerProductModel model, Product destination, bool trimFields = true)
+        {
+            if (model == null)
+                return destination;
+
+            if (trimFields)
+            {
+                if (model.Name != null)
+                    model.Name = model.Name.Trim();                
+            }
+            destination.Id = model.Id;
+            destination.Name = model.Name;
+            
             return destination;
         }
     }

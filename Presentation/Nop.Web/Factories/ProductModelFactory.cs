@@ -2002,12 +2002,11 @@ namespace Nop.Web.Factories
             return model;
         }
 
-
         /// <summary>
-        /// Prepare address model
+        /// Prepare custom product model
         /// </summary>
         /// <param name="model">Address model</param>
-        /// <param name="product">Address entity</param>
+        /// <param name="product">Product entity</param>
         /// <param name="excludeProperties">Whether to exclude populating of model properties from the entity</param>        
         /// <param name="prePopulateWithCustomerFields">Whether to populate model properties with the customer fields (used with the customer entity)</param>
         /// <param name="customer">Customer entity; required if prePopulateWithCustomerFields is true</param>
@@ -2035,7 +2034,7 @@ namespace Nop.Web.Factories
             {
                 if (customer == null)
                     throw new Exception("Customer cannot be null when prepopulating a Campaign");
-            //    model.Email = customer.Email;
+            //    model.Name = customer.n;
             //    model.FirstName = customer.FirstName;
             //    model.LastName = customer.LastName;
             //    model.Company = customer.Company;
@@ -2049,7 +2048,7 @@ namespace Nop.Web.Factories
             }
 
             //form fields
-            model.ProductPublished = product.Published;
+            model.ProductPublished = false;
             //model.CompanyRequired = addressSettings.CompanyRequired;
             //model.StreetAddressEnabled = addressSettings.StreetAddressEnabled;
             //model.StreetAddressRequired = addressSettings.StreetAddressRequired;
@@ -2069,14 +2068,14 @@ namespace Nop.Web.Factories
             //model.FaxRequired = addressSettings.FaxRequired;
 
             //customer attribute services
-            if (_productAttributeService != null)
-            {
-               // await PrepareCustomProductAttributesAsync(model, product, overrideAttributesXml);
-            }
-            //if (_addressAttributeFormatter != null && address != null)
+            //if (_productAttributeService != null)
             //{
-            //    model.FormattedCustomAddressAttributes = await _addressAttributeFormatter.FormatAttributesAsync(address.CustomAttributes);
+            // await PrepareCustomProductAttributesAsync(model, product, overrideAttributesXml);
             //}
+            if (product != null)
+            {
+                var prova = await _workContext.GetCurrentVendorAsync();
+            }
         }
         #endregion
     }

@@ -157,6 +157,7 @@
         public static string OrderSummaryShippingAddress => "order_summary_shipping_address";
         public static string OrderSummaryShippingMethodInfo => "order_summary_shipping_method_info";
         public static string OrderSummaryTotals => "order_summary_totals";
+        public static string ProductBottom => "product_bottom";
         public static string ProductBoxAddinfoAfter => "productbox_addinfo_after";
         public static string ProductBoxAddinfoBefore => "productbox_addinfo_before";
         public static string ProductBoxAddinfoMiddle => "productbox_addinfo_middle";

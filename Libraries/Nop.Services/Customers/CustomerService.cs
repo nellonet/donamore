@@ -1613,31 +1613,7 @@ namespace Nop.Services.Customers
                         where cam.CustomerId == customerId
                         select address;
 
-            var key = _staticCacheManager.PrepareKeyForShortTermCache(NopCustomerServicesDefaults.CustomerAddressesCacheKey, customerId);
-
-            return await _staticCacheManager.GetAsync(key, async () => await query.ToListAsync());
-        }
-
-        /// <summary>
-        /// Gets a list of addresses mapped to customer
-        /// </summary>
-        /// <param name="customerId">Customer identifier</param>
-        /// <returns>
-        /// A task that represents the asynchronous operation
-        /// The task result contains the result
-        /// </returns>
-        public virtual async Task<IList<Product>> GetProductsByCustomerIdAsync(int customerId)
-        {
-            var VendorId = from cust in _customerRepository.Table
-                           where cust.VendorId == customerId
-                           select cust.VendorId;
-
-
-            var query = from Product in _productRepository.Table                        
-                        where Product.VendorId == VendorId.FirstOrDefault()
-                        select Product;
-
-            var key = _staticCacheManager.PrepareKeyForShortTermCache(NopCustomerServicesDefaults.CustomerProductsCacheKey, customerId);
+            var key = _staticCacheManager.PrepareKeyForShortTermCache(NopCustomerServicesDefaults.CustomerAddressesCacheKey, customerId);         
 
             return await _staticCacheManager.GetAsync(key, async () => await query.ToListAsync());
         }
@@ -1662,6 +1638,55 @@ namespace Nop.Services.Customers
                         select address;
 
             var key = _staticCacheManager.PrepareKeyForShortTermCache(NopCustomerServicesDefaults.CustomerAddressCacheKey, customerId, addressId);
+
+            return await _staticCacheManager.GetAsync(key, async () => await query.FirstOrDefaultAsync());
+        }
+
+        /// <summary>
+        /// Gets a list of addresses mapped to customer
+        /// </summary>
+        /// <param name="customerId">Customer identifier</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation
+        /// The task result contains the result
+        /// </returns>
+        public virtual async Task<IList<Product>> GetProductsByCustomerIdAsync(int customerId)
+        {
+            var VendorIdQrb = from cust in _customerRepository.Table
+                           where cust.VendorId == customerId
+                           select cust.VendorId;
+            var VendorId = VendorIdQrb.FirstOrDefault();
+
+            var query = from product in _productRepository.Table                        
+                        where (product.VendorId == VendorId && product.Deleted == false)
+                        select product;
+
+            //imposto la key a 0 perchè non riesco a cancellare la cache, in questo modo lege sempre dal db
+            var key = _staticCacheManager.PrepareKeyForShortTermCache(NopCustomerServicesDefaults.CustomerProductsCacheKey, VendorId);
+            key.CacheTime = 0;
+
+            return await _staticCacheManager.GetAsync(key, async () => await query.ToListAsync());                         
+        }
+        
+        /// <summary>
+        /// Gets a address mapped to customer
+        /// </summary>
+        /// <param name="customerId">Customer identifier</param>
+        /// <param name="productId">Address identifier</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation
+        /// The task result contains the result
+        /// </returns>
+        public virtual async Task<Product> GetCustomerProductAsync(int customerId, int productId)
+        {
+            if (customerId == 0 || productId == 0)
+                return null;
+
+            var query = from product in _productRepository.Table                        
+                        where product.Id == productId
+                        select product;
+
+            var key = _staticCacheManager.PrepareKeyForShortTermCache(NopCustomerServicesDefaults.CustomerProductCacheKey, customerId, productId);
 
             return await _staticCacheManager.GetAsync(key, async () => await query.FirstOrDefaultAsync());
         }
@@ -1700,6 +1725,28 @@ namespace Nop.Services.Customers
 
         #endregion
 
+        #region Customer product
+
+        /// <summary>
+        /// Remove a customer product record
+        /// </summary>
+        /// <param name="customer">Customer</param>
+        /// <param name="product">Product</param>
+        /// <returns>A task that represents the asynchronous operation</returns>
+        public virtual async Task RemoveCustomerProductAsync(Customer customer, Product product)
+        {
+            if (customer == null)
+                throw new ArgumentNullException(nameof(customer));
+
+            if (await _productRepository.Table
+                .FirstOrDefaultAsync(m => m.Id == customer.Id)
+                is not null )
+            {
+              await _productRepository.DeleteAsync(product);
+            }
+        }
+        #endregion
+        
         #endregion
     }
 }

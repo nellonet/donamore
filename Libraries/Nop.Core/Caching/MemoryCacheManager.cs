@@ -113,7 +113,7 @@ namespace Nop.Core.Caching
         /// The task result contains the cached value associated with the specified key
         /// </returns>
         public async Task<T> GetAsync<T>(CacheKey key, Func<Task<T>> acquire)
-        {
+        {            
             if ((key?.CacheTime ?? 0) <= 0)
                 return await acquire();
 

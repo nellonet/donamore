@@ -34,23 +34,23 @@
                             <div class="buttons">
                                 <button type="button" class="button-2 edit-address-button" onclick="location.href = '@(Url.RouteUrl("CustomerProductEdit", new {productId = product.Id}))'">@T("Common.Edit")</button>
 
-                                <button type="button" class="button-2 delete-address-button" onclick="deletecustomeraddress(@(product.Id))">@T("Common.Delete")</button>
+                                <button type="button" class="button-2 delete-address-button" onclick="deletecustomerproduct(@(product.Id))">@T("Common.Delete")</button>
                             </div>
                         </div>
                     }
                 </div>
                 <script asp-location="Footer">
-                    function deletecustomeraddress(addressId) {
+                    function deletecustomerproduct(productId) {
                         if (confirm('@T("Common.AreYouSure")')) {
                             var postData = {
-                                addressId: addressId
+                                productId: productId
                             };
                             addAntiForgeryToken(postData);
 
                             $.ajax({
                                 cache: false,
                                 type: "POST",
-                                url: "@Url.Action("AddressDelete", "Customer")",
+                                url: "@Url.Action("ProductDelete", "Customer")",
                                 data: postData,
                                 dataType: "json",
                                 success: function (data, textStatus, jqXHR) {
@@ -67,7 +67,7 @@
         else
         {
             <div class="no-data">
-                @T("Account.CustomerAddresses.NoAddresses")
+                @T("Account.CustomerProducts.NoProducts")
             </div>
         }
         <div class="add-button">

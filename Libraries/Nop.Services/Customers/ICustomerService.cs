@@ -615,6 +615,17 @@ namespace Nop.Services.Customers
         Task<Address> GetCustomerAddressAsync(int customerId, int addressId);
 
         /// <summary>
+        /// Gets a address mapped to customer
+        /// </summary>
+        /// <param name="customerId">Customer identifier</param>
+        /// <param name="productId">Product identifier</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation
+        /// The task result contains the result
+        /// </returns>
+        Task<Product> GetCustomerProductAsync(int customerId, int productId);
+
+        /// <summary>
         /// Gets a customer billing address
         /// </summary>
         /// <param name="customer">Customer identifier</param>
@@ -641,6 +652,14 @@ namespace Nop.Services.Customers
         /// <param name="address">Address</param>
         /// <returns>A task that represents the asynchronous operation</returns>
         Task RemoveCustomerAddressAsync(Customer customer, Address address);
+
+        /// <summary>
+        /// Remove a customer-address mapping record
+        /// </summary>
+        /// <param name="customer">Customer</param>
+        /// <param name="product">Product</param>
+        /// <returns>A task that represents the asynchronous operation</returns>
+        Task RemoveCustomerProductAsync(Customer customer, Product product);
 
         /// <summary>
         /// Inserts a customer-address mapping record

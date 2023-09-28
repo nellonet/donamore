@@ -140,6 +140,7 @@ namespace Nop.Web.Controllers
             IPermissionService permissionService,
             IPictureService pictureService,
             IPriceFormatter priceFormatter,
+            IProductModelFactory productModelFactory,
             IProductService productService,
             IStateProvinceService stateProvinceService,
             IStoreContext storeContext,
@@ -187,6 +188,7 @@ namespace Nop.Web.Controllers
             _permissionService = permissionService;
             _pictureService = pictureService;
             _priceFormatter = priceFormatter;
+            _productModelFactory = productModelFactory;
             _productService = productService;
             _stateProvinceService = stateProvinceService;
             _storeContext = storeContext;
@@ -1596,6 +1598,27 @@ namespace Nop.Web.Controllers
             return View(model);
         }
 
+        [HttpPost]
+        public virtual async Task<IActionResult> ProductDelete(int productId)
+        {
+            var customer = await _workContext.GetCurrentCustomerAsync();
+            if (!await _customerService.IsRegisteredAsync(customer))
+                return Challenge();
+
+            //find product (ensure that it belongs to the current customer)
+            var product = await _customerService.GetCustomerProductAsync(customer.Id, productId);
+            if (product != null)
+            {
+                await _productService.DeleteProductAsync(product);
+            }
+
+            //redirect to the products list page
+            return Json(new
+            {
+                redirect = Url.RouteUrl("CustomerProducts"),
+            });
+        }
+
         public virtual async Task<IActionResult> ProductAdd()
         {
             if (!await _customerService.IsRegisteredAsync(await _workContext.GetCurrentCustomerAsync()))
@@ -1605,53 +1628,38 @@ namespace Nop.Web.Controllers
             await _productModelFactory.PrepareCustomerProductModelAsync(model.Product,
                 product: null,
                 excludeProperties: false);
-
             return View(model);
         }
 
         [HttpPost]
-        public virtual async Task<IActionResult> ProductAdd(CustomerAddressEditModel model, IFormCollection form)
+        public virtual async Task<IActionResult> ProductAdd(CustomerProductEditModel model, IFormCollection form)
         {
             var customer = await _workContext.GetCurrentCustomerAsync();
             if (!await _customerService.IsRegisteredAsync(customer))
-                return Challenge();
-
-            //custom address attributes
-            var customAttributes = await _addressAttributeParser.ParseCustomAddressAttributesAsync(form);
-            var customAttributeWarnings = await _addressAttributeParser.GetAttributeWarningsAsync(customAttributes);
-            foreach (var error in customAttributeWarnings)
-            {
-                ModelState.AddModelError("", error);
-            }
+                return Challenge();            
 
             if (ModelState.IsValid)
             {
-                var address = model.Address.ToEntity();
-                address.CustomAttributes = customAttributes;
-                address.CreatedOnUtc = DateTime.UtcNow;
-                //some validation
-                if (address.CountryId == 0)
-                    address.CountryId = null;
-                if (address.StateProvinceId == 0)
-                    address.StateProvinceId = null;
+                var product = model.Product.ToEntity();
+                product.VendorId = customer.Id;
+                product.ProductTypeId = 1;
+                product.CreatedOnUtc = DateTime.UtcNow;
+                product.UpdatedOnUtc = DateTime.UtcNow;                
 
+                await _productService.InsertProductAsync(product);                
 
-                await _addressService.InsertAddressAsync(address);
+                _notificationService.SuccessNotification(await _localizationService.GetResourceAsync("Account.CustomerProducts.Added"));
 
-                await _customerService.InsertCustomerAddressAsync(customer, address);
-
-                _notificationService.SuccessNotification(await _localizationService.GetResourceAsync("Account.CustomerAddresses.Added"));
-
-                return RedirectToRoute("CustomerAddresses");
+                return RedirectToRoute("CustomerProducts");
             }
 
             //If we got this far, something failed, redisplay form
-            await _addressModelFactory.PrepareAddressModelAsync(model.Address,
-                address: null,
-                excludeProperties: true,
-                addressSettings: _addressSettings,
-                loadCountries: async () => await _countryService.GetAllCountriesAsync((await _workContext.GetWorkingLanguageAsync()).Id),
-                overrideAttributesXml: customAttributes);
+            //await _addressModelFactory.PrepareAddressModelAsync(model.Address,
+            //    address: null,
+            //    excludeProperties: true,
+            //    addressSettings: _addressSettings,
+            //    loadCountries: async () => await _countryService.GetAllCountriesAsync((await _workContext.GetWorkingLanguageAsync()).Id),
+            //    overrideAttributesXml: customAttributes);
 
             return View(model);
         }
