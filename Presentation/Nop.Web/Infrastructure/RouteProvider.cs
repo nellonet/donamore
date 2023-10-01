@@ -363,6 +363,10 @@ namespace Nop.Web.Infrastructure
             endpointRouteBuilder.MapControllerRoute(name: "CustomerAddressAdd",
                 pattern: $"{lang}/customer/addressadd",
                 defaults: new { controller = "Customer", action = "AddressAdd" });
+            
+            endpointRouteBuilder.MapControllerRoute(name: "CustomerProductEdit",
+                pattern: $"{lang}/customer/productedit/{{productId:min(0)}}",
+                defaults: new { controller = "Customer", action = "ProductEdit" });
 
             endpointRouteBuilder.MapControllerRoute(name: "CustomerProductAdd",
                pattern: $"{lang}/customer/productadd",

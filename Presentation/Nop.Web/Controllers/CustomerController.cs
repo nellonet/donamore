@@ -1664,6 +1664,65 @@ namespace Nop.Web.Controllers
             return View(model);
         }
 
+        public virtual async Task<IActionResult> ProductEdit(int productId)
+        {
+            var customer = await _workContext.GetCurrentCustomerAsync();
+            if (!await _customerService.IsRegisteredAsync(customer))
+                return Challenge();
+
+            //find product (ensure that it belongs to the current customer)
+            var product = await _customerService.GetCustomerProductAsync(customer.Id, productId);
+            if (product == null)
+                //product is not found
+                return RedirectToRoute("CustomerProducts");
+
+            var model = new CustomerProductEditModel();
+            await _productModelFactory.PrepareCustomerProductModelAsync(model.Product,
+                product: product,
+                excludeProperties: false);
+            return View(model);
+        }
+
+        [HttpPost]
+        public virtual async Task<IActionResult> ProductEdit(CustomerProductEditModel model, IFormCollection form)
+        {
+            var customer = await _workContext.GetCurrentCustomerAsync();
+            if (!await _customerService.IsRegisteredAsync(customer))
+                return Challenge();
+
+            //find product (ensure that it belongs to the current customer)
+             var product = await _customerService.GetCustomerProductAsync(customer.Id, model.Product.Id);
+            if (product == null)
+                //product is not found
+                return RedirectToRoute("CustomerProducts");
+
+            //custom product attributes
+            //var customAttributes = await _addressAttributeParser.ParseCustomAddressAttributesAsync(form);
+            //var customAttributeWarnings = await _addressAttributeParser.GetAttributeWarningsAsync(customAttributes);
+            //foreach (var error in customAttributeWarnings)
+            //{
+            //    ModelState.AddModelError("", error);
+            //}
+
+            if (ModelState.IsValid)
+            {
+                product = model.Product.ToEntity(product);
+                //product.CustomAttributes = customAttributes;
+                await _productService.UpdateProductAsync(product);
+
+                _notificationService.SuccessNotification(await _localizationService.GetResourceAsync("Account.CustomerAddresses.Updated"));
+
+                return RedirectToRoute("CustomerProducts");
+            }
+
+            //If we got this far, something failed, redisplay form
+            await _productModelFactory.PrepareCustomerProductModelAsync(model.Product,
+                product: null,
+                excludeProperties: false);
+
+            return View(model);
+        }
+
         #endregion
 
         #region My account / Downloadable products
