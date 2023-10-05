@@ -15,8 +15,13 @@ namespace Nop.Web.Models.Customer
             
         }
 
-        [NopResourceDisplayName("Product.Fields.Name")]
+        public bool NameRequired { get; set; }
+        [NopResourceDisplayName("Customer.Product.Fields.Name")]
         public string Name { get; set; }
+
+        public bool ShortDescriptionRequired { get; set; }
+        [NopResourceDisplayName("Customer.Product.Fields.ShortDescription")]
+        public string ShortDescription { get; set; }
 
         public bool ProductPublished { get; set; }
 

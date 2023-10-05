@@ -51,7 +51,7 @@ namespace Nop.Web.Factories
         private readonly DateTimeSettings _dateTimeSettings;
         private readonly ExternalAuthenticationSettings _externalAuthenticationSettings;
         private readonly ForumSettings _forumSettings;
-        private readonly GdprSettings _gdprSettings;
+        private readonly GdprSettings _gdprSettings;        
         private readonly IAddressModelFactory _addressModelFactory;
         private readonly IAuthenticationPluginManager _authenticationPluginManager;
         private readonly ICountryService _countryService;
@@ -78,6 +78,7 @@ namespace Nop.Web.Factories
         private readonly IWorkContext _workContext;
         private readonly MediaSettings _mediaSettings;
         private readonly OrderSettings _orderSettings;
+        private readonly ProductSettings _productSettings;
         private readonly RewardPointsSettings _rewardPointsSettings;
         private readonly SecuritySettings _securitySettings;
         private readonly TaxSettings _taxSettings;
@@ -122,6 +123,7 @@ namespace Nop.Web.Factories
             IWorkContext workContext,
             MediaSettings mediaSettings,
             OrderSettings orderSettings,
+            ProductSettings productSettings,
             RewardPointsSettings rewardPointsSettings,
             SecuritySettings securitySettings,
             TaxSettings taxSettings,
@@ -162,6 +164,7 @@ namespace Nop.Web.Factories
             _workContext = workContext;
             _mediaSettings = mediaSettings;
             _orderSettings = orderSettings;
+            _productSettings = productSettings;
             _rewardPointsSettings = rewardPointsSettings;
             _securitySettings = securitySettings;
             _taxSettings = taxSettings;
@@ -809,7 +812,8 @@ namespace Nop.Web.Factories
                 var productModel = new CustomerProductModel();
                 await _productModelFactory.PrepareCustomerProductModelAsync(productModel,
                     product: product,
-                    excludeProperties: false);
+                    excludeProperties: false,
+                    productSettings: _productSettings);
                 model.Products.Add(productModel);
             }
             return model;

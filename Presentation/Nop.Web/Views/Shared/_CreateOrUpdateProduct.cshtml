@@ -7,7 +7,13 @@
         <input asp-for="Name" />
         <nop-required />
         <span asp-validation-for="Name"></span>
-    </div>   
-   
+    </div>
+    <div class="inputs">
+        <label asp-for="ShortDescription" asp-postfix=":"></label>
+        <input asp-for="ShortDescription" />
+        <nop-required />
+        <span asp-validation-for="ShortDescription"></span>
+    </div>
+
     @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductBottom, additionalData = Model })
 </div>

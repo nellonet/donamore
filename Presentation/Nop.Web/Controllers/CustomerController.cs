@@ -60,6 +60,7 @@ namespace Nop.Web.Controllers
         private readonly ForumSettings _forumSettings;
         private readonly GdprSettings _gdprSettings;
         private readonly HtmlEncoder _htmlEncoder;
+        private readonly ProductSettings _productSettings;
         private readonly IAddressAttributeParser _addressAttributeParser;
         private readonly IAddressModelFactory _addressModelFactory;
         private readonly IAddressService _addressService;
@@ -112,6 +113,7 @@ namespace Nop.Web.Controllers
             ForumSettings forumSettings,
             GdprSettings gdprSettings,
             HtmlEncoder htmlEncoder,
+            ProductSettings productSettings,
             IAddressAttributeParser addressAttributeParser,
             IAddressModelFactory addressModelFactory,
             IAddressService addressService,
@@ -160,6 +162,7 @@ namespace Nop.Web.Controllers
             _forumSettings = forumSettings;
             _gdprSettings = gdprSettings;
             _htmlEncoder = htmlEncoder;
+            _productSettings = productSettings;
             _addressAttributeParser = addressAttributeParser;
             _addressModelFactory = addressModelFactory;
             _addressService = addressService;
@@ -1627,7 +1630,8 @@ namespace Nop.Web.Controllers
             var model = new CustomerProductEditModel();
             await _productModelFactory.PrepareCustomerProductModelAsync(model.Product,
                 product: null,
-                excludeProperties: false);
+                excludeProperties: false,
+                productSettings: _productSettings);
             return View(model);
         }
 
@@ -1679,7 +1683,8 @@ namespace Nop.Web.Controllers
             var model = new CustomerProductEditModel();
             await _productModelFactory.PrepareCustomerProductModelAsync(model.Product,
                 product: product,
-                excludeProperties: false);
+                excludeProperties: false,
+                productSettings: _productSettings);
             return View(model);
         }
 
@@ -1718,7 +1723,8 @@ namespace Nop.Web.Controllers
             //If we got this far, something failed, redisplay form
             await _productModelFactory.PrepareCustomerProductModelAsync(model.Product,
                 product: null,
-                excludeProperties: false);
+                excludeProperties: false,
+                productSettings: _productSettings);
 
             return View(model);
         }

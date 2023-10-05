@@ -122,7 +122,8 @@ namespace Nop.Web.Factories
         /// <param name="overrideAttributesXml">Overridden address attributes in XML format; pass null to use CustomAttributes of the address entity</param>
         /// <returns>A task that represents the asynchronous operation</returns>
         Task PrepareCustomerProductModelAsync(CustomerProductModel model,
-            Product product, bool excludeProperties,            
+            Product product, bool excludeProperties,
+            ProductSettings productSettings,
             bool prePopulateWithCustomerFields = false,
             Customer customer = null,
             string overrideAttributesXml = "");

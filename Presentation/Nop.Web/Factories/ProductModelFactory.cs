@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Nop.Core;
 using Nop.Core.Caching;
 using Nop.Core.Domain.Catalog;
+using Nop.Core.Domain.Common;
 using Nop.Core.Domain.Customers;
 using Nop.Core.Domain.Media;
 using Nop.Core.Domain.Orders;
@@ -2012,8 +2013,9 @@ namespace Nop.Web.Factories
         /// <param name="customer">Customer entity; required if prePopulateWithCustomerFields is true</param>
         /// <param name="overrideAttributesXml">Overridden address attributes in XML format; pass null to use CustomAttributes of the address entity</param>
         /// <returns>A task that represents the asynchronous operation</returns>
-        public virtual async Task PrepareCustomerProductModelAsync(CustomerProductModel model,
-            Product product, bool excludeProperties,            
+        public virtual async Task PrepareCustomerProductModelAsync(CustomerProductModel model, 
+            Product product, bool excludeProperties,
+            ProductSettings productSettings,
             bool prePopulateWithCustomerFields = false,
             Customer customer = null,
             string overrideAttributesXml = "")
@@ -2049,7 +2051,7 @@ namespace Nop.Web.Factories
 
             //form fields
             model.ProductPublished = false;
-            //model.CompanyRequired = addressSettings.CompanyRequired;
+            model.ShortDescriptionRequired = true;
             //model.StreetAddressEnabled = addressSettings.StreetAddressEnabled;
             //model.StreetAddressRequired = addressSettings.StreetAddressRequired;
             //model.StreetAddress2Enabled = addressSettings.StreetAddress2Enabled;

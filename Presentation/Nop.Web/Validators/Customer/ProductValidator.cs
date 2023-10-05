@@ -7,7 +7,7 @@ using Nop.Services.Localization;
 using Nop.Web.Framework.Validators;
 using Nop.Web.Models.Customer;
 
-namespace Nop.Web.Validators.Cuatomer
+namespace Nop.Web.Validators.Customer
 {
     public partial class ProductValidator : BaseNopValidator<CustomerProductModel>
     {
@@ -18,13 +18,18 @@ namespace Nop.Web.Validators.Cuatomer
         {
             RuleFor(x => x.Name)
                 .NotEmpty()
-                .WithMessageAwait(localizationService.GetResourceAsync("Product.Fields.Name.Required"));                        
+                .WithMessageAwait(localizationService.GetResourceAsync("custom.products.fields.name.required"));                        
             
             if (productSettings.ProductPubblished && productSettings.ProductEnabled)
             {
                 //RuleFor(x => x.Company).NotEmpty().WithMessageAwait(localizationService.GetResourceAsync("Account.Fields.Company.Required"));
             }
-            
+
+            if (productSettings.ShortDescriptionRequired && productSettings.ShortDescriptionEnabled)
+            {
+                RuleFor(x => x.ShortDescription).NotEmpty().WithMessageAwait(localizationService.GetResourceAsync("custom.products.fields.shortdescription.required"));
+            }
+
         }
     }
 }
