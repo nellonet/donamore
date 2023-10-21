@@ -146,7 +146,9 @@ namespace Nop.Web.Framework.Extensions
             var scriptTag = await script.RenderHtmlContentAsync();
             tabStrip.AppendLine(scriptTag);
 
-            return new HtmlString(tabStrip.ToString());
+            var aaa = new HtmlString(tabStrip.ToString());
+
+            return aaa;
         }
 
         /// <summary>

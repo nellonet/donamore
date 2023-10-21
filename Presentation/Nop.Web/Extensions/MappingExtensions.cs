@@ -87,6 +87,8 @@ namespace Nop.Web.Extensions
             }
             destination.Id = model.Id;
             destination.Name = model.Name;
+            destination.ShortDescription = model.ShortDescription;
+            destination.FullDescription = model.FullDescription;
             
             return destination;
         }

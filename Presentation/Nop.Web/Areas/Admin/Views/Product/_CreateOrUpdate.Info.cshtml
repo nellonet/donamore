@@ -9,22 +9,22 @@
 @{
     var stores = await storeService.GetAllStoresAsync();
 }
-    @* resources for product tags input *@
-    <script src="~/lib_npm/jquery-tageditor/jquery.caret.min.js"></script>
-    <script src="~/lib_npm/jquery-tageditor/jquery.tag-editor.min.js"></script>
-    <link rel="stylesheet" href="~/lib_npm/jquery-tageditor/jquery.tag-editor.css">
+@* resources for product tags input *@
+<script src="~/lib_npm/jquery-tageditor/jquery.caret.min.js"></script>
+<script src="~/lib_npm/jquery-tageditor/jquery.tag-editor.min.js"></script>
+<link rel="stylesheet" href="~/lib_npm/jquery-tageditor/jquery.tag-editor.css">
 
 
-    <script asp-location="Footer">
-    $(document).ready(function() {
-        @if (!Model.IsLoggedInAsVendor)
-        {
-            <text>
-            $("#@Html.IdFor(model => model.ShowOnHomepage)").click(toggleShowOnHomepage);
+<script asp-location="Footer">
+    $(document).ready(function () {
+    @if (!Model.IsLoggedInAsVendor)
+    {
+        <text>
+                $("#@Html.IdFor(model => model.ShowOnHomepage)").click(toggleShowOnHomepage);
             toggleShowOnHomepage();
-            </text>
-        }
-        $("#@Html.IdFor(model => model.ProductTypeId)").change(toggleProductType);
+        </text>
+    }
+            $("#@Html.IdFor(model => model.ProductTypeId)").change(toggleProductType);
         toggleProductType();
     });
 
@@ -59,13 +59,13 @@
             $('#group-visible-individually').hideElement();
             $('#group-associated-products').showElement();
 
-            @if (Model.Id > 0)
-            {
-                <text>updateTableWidth('#associatedproducts-grid');</text>
-            }
+    @if (Model.Id > 0)
+    {
+        <text>updateTableWidth('#associatedproducts-grid'); </text>
+    }
 
-            $('#@Html.IdFor(model => model.VisibleIndividually)').prop('checked', true);
-            
+                $('#@Html.IdFor(model => model.VisibleIndividually)').prop('checked', true);
+
 
             $('[data-card-name=product-price]').hideElement();
             $('[data-card-name=product-shipping]').hideElement();
@@ -78,22 +78,22 @@
 
         //templates
         var productTypeSupportedValues = {};
-        @foreach (var kvp in Model.ProductsTypesSupportedByProductTemplates)
+    @foreach (var kvp in Model.ProductsTypesSupportedByProductTemplates)
+    {
+        <text>productTypeSupportedValues['@(kvp.Key)'] = { }; </text>
+        foreach (var item in kvp.Value)
         {
-            <text>productTypeSupportedValues['@(kvp.Key)'] = {};</text>
-            foreach (var item in kvp.Value)
-            {
-                <text>productTypeSupportedValues['@(kvp.Key)']['@(item.Value)'] = '@Html.Raw(JavaScriptEncoder.Default.Encode((item.Text)))';</text>
-            }
+            <text>productTypeSupportedValues['@(kvp.Key)']['@(item.Value)'] = '@Html.Raw(JavaScriptEncoder.Default.Encode((item.Text)))'; </text>
         }
-        var productTemplateDropddown = $("#@Html.IdFor(model => model.ProductTemplateId)");
+    }
+                        var productTemplateDropddown = $("#@Html.IdFor(model => model.ProductTemplateId)");
         var productTemplateSelectedValue = productTemplateDropddown.val();
         productTemplateDropddown.empty();
         for (var name in productTypeSupportedValues[selectedProductTypeId]) {
             productTemplateDropddown.append($("<option></option>").attr("value", name).text(productTypeSupportedValues[selectedProductTypeId][name]));
         }
         //previously selected value
-        $('#@Html.IdFor(model => model.ProductTemplateId) option').each(function(){
+        $('#@Html.IdFor(model => model.ProductTemplateId) option').each(function () {
             if (this.value == productTemplateSelectedValue) {
                 productTemplateDropddown.val(productTemplateSelectedValue);
             }
@@ -107,28 +107,28 @@
     }
 
     //tags
-    $(document).ready(function() {
-        @Html.Raw(Model.InitialProductTags)
-        $("#@Html.IdFor(model => model.ProductTags)").tagEditor({
-            autocomplete: {
-                delay: 0,
-                position: { collision: 'flip' },
-                source: initialProductTags
-            },
-            delimiter: ',',
-            placeholder: '@T("Admin.Catalog.Products.Fields.ProductTags.Placeholder")'
-        });
+    $(document).ready(function () {
+    @Html.Raw(Model.InitialProductTags)
+            $("#@Html.IdFor(model => model.ProductTags)").tagEditor({
+                autocomplete: {
+                    delay: 0,
+                    position: { collision: 'flip' },
+                    source: initialProductTags
+                },
+                delimiter: ',',
+                placeholder: '@T("Admin.Catalog.Products.Fields.ProductTags.Placeholder")'
+            });
     });
 
     //required product friendly names
-    $(document).ready(function() {
+    $(document).ready(function () {
         loadRequiredProductFriendlyNames();
     });
 
-    $(document).ready(function() {
+    $(document).ready(function () {
         $('#@Html.IdFor(model => model.RequiredProductIds)')
             .data('timeout', null)
-            .keyup(function() {
+            .keyup(function () {
                 clearTimeout($(this).data('timeout'));
                 //one second timeout
                 $(this).data('timeout', setTimeout(loadRequiredProductFriendlyNames, 1000));
@@ -175,72 +175,72 @@
             warningValidation('@Url.Action("SkuReservedWarning")', '@Html.NameFor(model => model.Sku)', { productId: @Model.Id, sku: $(this).val() });
         });
     });
-    </script>
+</script>
 
 
 <div class="card-body">
     <div id="product-details-area">
         @(await Html.LocalizedEditorAsync<ProductModel, ProductLocalizedModel>("product-info-localized",
-    @<div>
-        <div class="form-group row">
-            <div class="col-md-3">
-                <nop-label asp-for="@Model.Locales[item].Name" />
+            @<div>
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        <nop-label asp-for="@Model.Locales[item].Name" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="@Model.Locales[item].Name" />
+                        <span asp-validation-for="@Model.Locales[item].Name"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        <nop-label asp-for="@Model.Locales[item].ShortDescription" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-textarea asp-for="@Model.Locales[item].ShortDescription" />
+                        <span asp-validation-for="@Model.Locales[item].ShortDescription"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        <nop-label asp-for="@Model.Locales[item].FullDescription" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="@Model.Locales[item].FullDescription" asp-template="RichEditor" />
+                        <span asp-validation-for="@Model.Locales[item].FullDescription"></span>
+                    </div>
+                </div>
+                <input type="hidden" asp-for="@Model.Locales[item].LanguageId" />
             </div>
-            <div class="col-md-9">
-                <nop-editor asp-for="@Model.Locales[item].Name" />
-                <span asp-validation-for="@Model.Locales[item].Name"></span>
-            </div>
-        </div>
-        <div class="form-group row">
-            <div class="col-md-3">
-                <nop-label asp-for="@Model.Locales[item].ShortDescription" />
-            </div>
-            <div class="col-md-9">
-                <nop-textarea asp-for="@Model.Locales[item].ShortDescription" />
-                <span asp-validation-for="@Model.Locales[item].ShortDescription"></span>
-            </div>
-        </div>
-        <div class="form-group row">
-            <div class="col-md-3">
-                <nop-label asp-for="@Model.Locales[item].FullDescription" />
-            </div>
-            <div class="col-md-9">
-                <nop-editor asp-for="@Model.Locales[item].FullDescription" asp-template="RichEditor" />
-                <span asp-validation-for="@Model.Locales[item].FullDescription"></span>
-            </div>
-        </div>
-        <input type="hidden" asp-for="@Model.Locales[item].LanguageId" />
-    </div>
-    ,
-    @<div>
-        <div class="form-group row">
-            <div class="col-md-3">
-                <nop-label asp-for="Name" />
-            </div>
-            <div class="col-md-9">
-                <nop-editor asp-for="Name" asp-required="true" />
-                <span asp-validation-for="Name"></span>
-            </div>
-        </div>
-        <div class="form-group row">
-            <div class="col-md-3">
-                <nop-label asp-for="ShortDescription" />
-            </div>
-            <div class="col-md-9">
-                <nop-textarea asp-for="ShortDescription" />
-                <span asp-validation-for="ShortDescription"></span>
-            </div>
-        </div>
-        <div class="form-group row">
-            <div class="col-md-3">
-                <nop-label asp-for="FullDescription" />
-            </div>
-            <div class="col-md-9">
-                <nop-editor asp-for="FullDescription" asp-template="RichEditor" />
-                <span asp-validation-for="FullDescription"></span>
-            </div>
-        </div>
-        </div>))
+            ,
+            @<div>
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        <nop-label asp-for="Name" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="Name" asp-required="true" />
+                        <span asp-validation-for="Name"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        <nop-label asp-for="ShortDescription" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-textarea asp-for="ShortDescription" />
+                        <span asp-validation-for="ShortDescription"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        <nop-label asp-for="FullDescription" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="FullDescription" asp-template="RichEditor" />
+                        <span asp-validation-for="FullDescription"></span>
+                    </div>
+                </div>             
+            </div>))       
 
         <div class="form-group row">
             <div class="col-md-3">
@@ -259,25 +259,25 @@
         <div class="col-md-9">
             <nop-select asp-for="SelectedCategoryIds" asp-items="Model.AvailableCategories" asp-multiple="true" />
             <script>
-                $(document).ready(function() {
-					var categoryIdsInput = $('#@Html.IdFor(model => model.SelectedCategoryIds)').data("kendoMultiSelect");
-					categoryIdsInput.setOptions({
-                    autoClose: false,
-                    filter: "contains"
+                $(document).ready(function () {
+                    var categoryIdsInput = $('#@Html.IdFor(model => model.SelectedCategoryIds)').data("kendoMultiSelect");
+                    categoryIdsInput.setOptions({
+                        autoClose: false,
+                        filter: "contains"
                     });
 
-				@if (Model.AvailableCategories.Count == 0)
+                @if (Model.AvailableCategories.Count == 0)
                 {
                     <text>
-                        categoryIdsInput.setOptions({
-                            enable: false,
-                            placeholder: '@T("Admin.Catalog.Products.Fields.Categories.NoCategoriesAvailable")'
-                        });
+                            categoryIdsInput.setOptions({
+                                enable: false,
+                                placeholder: '@T("Admin.Catalog.Products.Fields.Categories.NoCategoriesAvailable")'
+                            });
                         categoryIdsInput._placeholder();
                         categoryIdsInput._enable();
                     </text>
                 }
-            });
+                                                                                });
             </script>
         </div>
     </div>
@@ -288,25 +288,25 @@
         <div class="col-md-9">
             <nop-select asp-for="SelectedManufacturerIds" asp-items="Model.AvailableManufacturers" asp-multiple="true" />
             <script>
-                $(document).ready(function() {
-                var manufacturersIdsInput = $('#@Html.IdFor(model => model.SelectedManufacturerIds)').data("kendoMultiSelect");
-                manufacturersIdsInput.setOptions({
-                    autoClose: false,
-                    filter: "contains"
-                });
+                $(document).ready(function () {
+                    var manufacturersIdsInput = $('#@Html.IdFor(model => model.SelectedManufacturerIds)').data("kendoMultiSelect");
+                    manufacturersIdsInput.setOptions({
+                        autoClose: false,
+                        filter: "contains"
+                    });
 
-				@if (Model.AvailableManufacturers.Count == 0)
+                @if (Model.AvailableManufacturers.Count == 0)
                 {
                     <text>
-                        manufacturersIdsInput.setOptions({
-                            enable: false,
-                            placeholder: '@T("Admin.Catalog.Products.Fields.Manufacturers.NoManufacturersAvailable")'
-                        });
+                            manufacturersIdsInput.setOptions({
+                                enable: false,
+                                placeholder: '@T("Admin.Catalog.Products.Fields.Manufacturers.NoManufacturersAvailable")'
+                            });
                         manufacturersIdsInput._placeholder();
                         manufacturersIdsInput._enable();
-                        </text>
+                    </text>
                 }
-            });
+                                                                                });
             </script>
         </div>
     </div>
@@ -393,61 +393,61 @@
         </div>
         @if (Model.Id > 0)
         {
-            <div class="card-body">                
-            <ul class="common-list">
-                <li>
-                    @T("Admin.Catalog.Products.AssociatedProducts.Note1")
-                </li>
-                <li>
-                    @T("Admin.Catalog.Products.AssociatedProducts.Note2")
-                </li>
-            </ul>
+            <div class="card-body">
+                <ul class="common-list">
+                    <li>
+                        @T("Admin.Catalog.Products.AssociatedProducts.Note1")
+                    </li>
+                    <li>
+                        @T("Admin.Catalog.Products.AssociatedProducts.Note2")
+                    </li>
+                </ul>
 
-            @await Html.PartialAsync("Table", new DataTablesModel
+                @await Html.PartialAsync("Table", new DataTablesModel
             {
-                Name = "associatedproducts-grid",
-                UrlRead = new DataUrl("AssociatedProductList", "Product", new RouteValueDictionary { [nameof(Model.AssociatedProductSearchModel.ProductId)] = Model.AssociatedProductSearchModel.ProductId }),
-                UrlDelete = new DataUrl("AssociatedProductDelete", "Product", null),
-                UrlUpdate = new DataUrl("AssociatedProductUpdate", "Product", null),
-                Length = Model.AssociatedProductSearchModel.PageSize,
-                LengthMenu = Model.AssociatedProductSearchModel.AvailablePageSizes,
-                ColumnCollection = new List<ColumnProperty>
-                    {
-					new ColumnProperty(nameof(AssociatedProductModel.ProductName))
-                        {
-                            Title = T("Admin.Catalog.Products.AssociatedProducts.Fields.Product").Text
-                        },
-                        new ColumnProperty(nameof(AssociatedProductModel.DisplayOrder))
-                        {
-                            Title = T("Admin.Catalog.Products.AssociatedProducts.Fields.DisplayOrder").Text,
-                            Width = "150",
-                            ClassName = NopColumnClassDefaults.CenterAll,
-                            Editable = true,
-                            EditType = EditType.Number
-                        },
-                        new ColumnProperty(nameof(AssociatedProductModel.Id))
-                        {
-                            Title = T("Admin.Common.View").Text,
-                            Width = "150",
-                            ClassName = NopColumnClassDefaults.Button,
-                            Render = new RenderButtonView(new DataUrl("~/Admin/Product/Edit/", nameof(AssociatedProductModel.Id)))
-                        },
-                        new ColumnProperty(nameof(AssociatedProductModel.Id))
-                        {
-                            Title = T("Admin.Common.Edit").Text,
-                            Width = "200",
-                            ClassName =  NopColumnClassDefaults.Button,
-                            Render = new RenderButtonsInlineEdit()
-                        },
-                        new ColumnProperty(nameof(AssociatedProductModel.Id))
-                        {
-                            Title = T("Admin.Common.Delete").Text,
-                            Width = "100",
-                            Render = new RenderButtonRemove(T("Admin.Common.Delete").Text),
-                            ClassName = NopColumnClassDefaults.Button
-                        }                               
-                    }
-                })
+            Name = "associatedproducts-grid",
+            UrlRead = new DataUrl("AssociatedProductList", "Product", new RouteValueDictionary { [nameof(Model.AssociatedProductSearchModel.ProductId)] = Model.AssociatedProductSearchModel.ProductId }),
+            UrlDelete = new DataUrl("AssociatedProductDelete", "Product", null),
+            UrlUpdate = new DataUrl("AssociatedProductUpdate", "Product", null),
+            Length = Model.AssociatedProductSearchModel.PageSize,
+            LengthMenu = Model.AssociatedProductSearchModel.AvailablePageSizes,
+            ColumnCollection = new List<ColumnProperty>
+            {
+            new ColumnProperty(nameof(AssociatedProductModel.ProductName))
+            {
+            Title = T("Admin.Catalog.Products.AssociatedProducts.Fields.Product").Text
+            },
+            new ColumnProperty(nameof(AssociatedProductModel.DisplayOrder))
+            {
+            Title = T("Admin.Catalog.Products.AssociatedProducts.Fields.DisplayOrder").Text,
+            Width = "150",
+            ClassName = NopColumnClassDefaults.CenterAll,
+            Editable = true,
+            EditType = EditType.Number
+            },
+            new ColumnProperty(nameof(AssociatedProductModel.Id))
+            {
+            Title = T("Admin.Common.View").Text,
+            Width = "150",
+            ClassName = NopColumnClassDefaults.Button,
+            Render = new RenderButtonView(new DataUrl("~/Admin/Product/Edit/", nameof(AssociatedProductModel.Id)))
+            },
+            new ColumnProperty(nameof(AssociatedProductModel.Id))
+            {
+            Title = T("Admin.Common.Edit").Text,
+            Width = "200",
+            ClassName =  NopColumnClassDefaults.Button,
+            Render = new RenderButtonsInlineEdit()
+            },
+            new ColumnProperty(nameof(AssociatedProductModel.Id))
+            {
+            Title = T("Admin.Common.Delete").Text,
+            Width = "100",
+            Render = new RenderButtonRemove(T("Admin.Common.Delete").Text),
+            ClassName = NopColumnClassDefaults.Button
+            }
+            }
+            })
             </div>
             <div class="card-footer">
                 <button type="submit" id="btnAddNewAssociatedProduct" onclick="javascript:OpenWindow('@(Url.Action("AssociatedProductAddPopup", "Product", new {productId = Model.Id, btnId = "btnRefreshAssociatedProducts", formId = "product-form"}))', 800, 800, true); return false;" class="btn btn-primary">
@@ -499,28 +499,28 @@
         <div class="col-md-9">
             <div class="row">
                 <div class="col-md-4">
-                    <nop-select asp-for="SelectedCustomerRoleIds" asp-items="Model.AvailableCustomerRoles" asp-multiple="true"/>
+                    <nop-select asp-for="SelectedCustomerRoleIds" asp-items="Model.AvailableCustomerRoles" asp-multiple="true" />
                     <script>
-                    $(document).ready(function() {
-                        var rolesIdsInput = $('#@Html.IdFor(model => model.SelectedCustomerRoleIds)')
-                            .data("kendoMultiSelect");
-                        rolesIdsInput.setOptions({
-                            autoClose: false,
-                            filter: "contains"
-                        });
+                        $(document).ready(function () {
+                            var rolesIdsInput = $('#@Html.IdFor(model => model.SelectedCustomerRoleIds)')
+                                .data("kendoMultiSelect");
+                            rolesIdsInput.setOptions({
+                                autoClose: false,
+                                filter: "contains"
+                            });
 
                         @if (Model.AvailableCustomerRoles.Count == 0)
                         {
                             <text>
-                                rolesIdsInput.setOptions({
-                                    enable: false,
-                                    placeholder: 'No customer roles available'
-                                });
+                                    rolesIdsInput.setOptions({
+                                        enable: false,
+                                        placeholder: 'No customer roles available'
+                                    });
                                 rolesIdsInput._placeholder();
                                 rolesIdsInput._enable();
                             </text>
                         }
-                    });
+                                                                                                                        });
                     </script>
                 </div>
                 <div class="col-md-8">
@@ -538,25 +538,25 @@
                 <div class="col-md-4">
                     <nop-select asp-for="SelectedStoreIds" asp-items="Model.AvailableStores" asp-multiple="true" />
                     <script>
-                    $(document).ready(function() {
-                        var storesIdsInput = $('#@Html.IdFor(model => model.SelectedStoreIds)').data("kendoMultiSelect");
-                        storesIdsInput.setOptions({
-                            autoClose: false,
-                            filter: "contains"
-                        });
+                        $(document).ready(function () {
+                            var storesIdsInput = $('#@Html.IdFor(model => model.SelectedStoreIds)').data("kendoMultiSelect");
+                            storesIdsInput.setOptions({
+                                autoClose: false,
+                                filter: "contains"
+                            });
 
                         @if (Model.AvailableStores.Count == 0)
                         {
                             <text>
-                                storesIdsInput.setOptions({
-                                    enable: false,
-                                    placeholder: 'No stores available'
-                                });
+                                    storesIdsInput.setOptions({
+                                        enable: false,
+                                        placeholder: 'No stores available'
+                                    });
                                 storesIdsInput._placeholder();
                                 storesIdsInput._enable();
                             </text>
                         }
-                    });
+                                                                                                                        });
                     </script>
                 </div>
                 <div class="col-md-8">

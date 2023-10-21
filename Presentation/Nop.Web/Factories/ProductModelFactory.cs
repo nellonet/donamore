@@ -30,6 +30,7 @@ using Nop.Services.Shipping.Date;
 using Nop.Services.Stores;
 using Nop.Services.Tax;
 using Nop.Services.Vendors;
+using Nop.Web.Framework.Factories;
 using Nop.Web.Infrastructure.Cache;
 using Nop.Web.Models.Catalog;
 using Nop.Web.Models.Common;
@@ -56,6 +57,7 @@ namespace Nop.Web.Factories
         private readonly IDownloadService _downloadService;
         private readonly IGenericAttributeService _genericAttributeService;
         private readonly ILocalizationService _localizationService;
+        private readonly ILocalizedModelFactory _localizedModelFactory;
         private readonly IManufacturerService _manufacturerService;
         private readonly IPermissionService _permissionService;
         private readonly IPictureService _pictureService;
@@ -100,6 +102,7 @@ namespace Nop.Web.Factories
             IDownloadService downloadService,
             IGenericAttributeService genericAttributeService,
             ILocalizationService localizationService,
+            ILocalizedModelFactory localizedModelFactory,
             IManufacturerService manufacturerService,
             IPermissionService permissionService,
             IPictureService pictureService,
@@ -140,6 +143,7 @@ namespace Nop.Web.Factories
             _downloadService = downloadService;
             _genericAttributeService = genericAttributeService;
             _localizationService = localizationService;
+            _localizedModelFactory = localizedModelFactory;
             _manufacturerService = manufacturerService;
             _permissionService = permissionService;
             _pictureService = pictureService;
@@ -2030,7 +2034,26 @@ namespace Nop.Web.Factories
             {
                 model.Id = product.Id;
                 model.Name = product.Name;
+                model.ShortDescription = product.ShortDescription;
+                model.FullDescription = product.FullDescription;
             }
+
+            Func<ProductLocalizedModel, int, Task> localizedModelConfiguration = null;
+            //  //define localized model configuration action
+            localizedModelConfiguration = async (locale, languageId) =>
+              {
+                  locale.Name = await _localizationService.GetLocalizedAsync(product, entity => entity.Name, languageId, false, false);
+                  locale.FullDescription = await _localizationService.GetLocalizedAsync(product, entity => entity.FullDescription, languageId, false, false);
+                  locale.ShortDescription = await _localizationService.GetLocalizedAsync(product, entity => entity.ShortDescription, languageId, false, false);
+                  locale.MetaKeywords = await _localizationService.GetLocalizedAsync(product, entity => entity.MetaKeywords, languageId, false, false);
+                  locale.MetaDescription = await _localizationService.GetLocalizedAsync(product, entity => entity.MetaDescription, languageId, false, false);
+                  locale.MetaTitle = await _localizationService.GetLocalizedAsync(product, entity => entity.MetaTitle, languageId, false, false);
+                  locale.SeName = await _urlRecordService.GetSeNameAsync(product, languageId, false, false);
+              };
+
+            //prepare localized models
+            if (!excludeProperties)
+                model.Locales = await _localizedModelFactory.PrepareLocalizedModelsAsync(localizedModelConfiguration);
 
             if (product == null && prePopulateWithCustomerFields)
             {

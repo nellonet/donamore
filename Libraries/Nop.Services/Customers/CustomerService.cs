@@ -1651,18 +1651,13 @@ namespace Nop.Services.Customers
         /// The task result contains the result
         /// </returns>
         public virtual async Task<IList<Product>> GetProductsByCustomerIdAsync(int customerId)
-        {
-            var VendorIdQrb = from cust in _customerRepository.Table
-                           where cust.VendorId == customerId
-                           select cust.VendorId;
-            var VendorId = VendorIdQrb.FirstOrDefault();
-
+        {        
             var query = from product in _productRepository.Table                        
-                        where (product.VendorId == VendorId && product.Deleted == false)
+                        where (product.VendorId == customerId && product.Deleted == false)
                         select product;
 
             //imposto la key a 0 perchè non riesco a cancellare la cache, in questo modo lege sempre dal db
-            var key = _staticCacheManager.PrepareKeyForShortTermCache(NopCustomerServicesDefaults.CustomerProductsCacheKey, VendorId);
+            var key = _staticCacheManager.PrepareKeyForShortTermCache(NopCustomerServicesDefaults.CustomerProductsCacheKey, customerId);
             key.CacheTime = 0;
 
             return await _staticCacheManager.GetAsync(key, async () => await query.ToListAsync());                         

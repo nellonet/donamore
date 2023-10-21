@@ -77,6 +77,11 @@ namespace Nop.Web.Models.Common
         [NopResourceDisplayName("Address.Fields.FaxNumber")]
         public string FaxNumber { get; set; }
 
+        public bool FirstNameRequired { get; set; }
+        public bool LastNameRequired { get; set; }
+        public bool EmailRequired { get; set; }
+        public bool CountryRequired { get; set; }
+
         public IList<SelectListItem> AvailableCountries { get; set; }
         public IList<SelectListItem> AvailableStates { get; set; }
 
