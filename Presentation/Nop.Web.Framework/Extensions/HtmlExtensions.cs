@@ -145,10 +145,8 @@ namespace Nop.Web.Framework.Extensions
                 "});");
             var scriptTag = await script.RenderHtmlContentAsync();
             tabStrip.AppendLine(scriptTag);
-
-            var aaa = new HtmlString(tabStrip.ToString());
-
-            return aaa;
+            
+            return new HtmlString(tabStrip.ToString()); ;
         }
 
         /// <summary>

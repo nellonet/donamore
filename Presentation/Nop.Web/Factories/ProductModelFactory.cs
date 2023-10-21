@@ -2036,24 +2036,7 @@ namespace Nop.Web.Factories
                 model.Name = product.Name;
                 model.ShortDescription = product.ShortDescription;
                 model.FullDescription = product.FullDescription;
-            }
-
-            Func<ProductLocalizedModel, int, Task> localizedModelConfiguration = null;
-            //  //define localized model configuration action
-            localizedModelConfiguration = async (locale, languageId) =>
-              {
-                  locale.Name = await _localizationService.GetLocalizedAsync(product, entity => entity.Name, languageId, false, false);
-                  locale.FullDescription = await _localizationService.GetLocalizedAsync(product, entity => entity.FullDescription, languageId, false, false);
-                  locale.ShortDescription = await _localizationService.GetLocalizedAsync(product, entity => entity.ShortDescription, languageId, false, false);
-                  locale.MetaKeywords = await _localizationService.GetLocalizedAsync(product, entity => entity.MetaKeywords, languageId, false, false);
-                  locale.MetaDescription = await _localizationService.GetLocalizedAsync(product, entity => entity.MetaDescription, languageId, false, false);
-                  locale.MetaTitle = await _localizationService.GetLocalizedAsync(product, entity => entity.MetaTitle, languageId, false, false);
-                  locale.SeName = await _urlRecordService.GetSeNameAsync(product, languageId, false, false);
-              };
-
-            //prepare localized models
-            if (!excludeProperties)
-                model.Locales = await _localizedModelFactory.PrepareLocalizedModelsAsync(localizedModelConfiguration);
+            }          
 
             if (product == null && prePopulateWithCustomerFields)
             {

@@ -13,7 +13,8 @@ namespace Nop.Web.Models.Customer
         public CustomerProductModel()
         {
             Locales = new List<ProductLocalizedModel>();
-
+            ProductPictureSearchModel = new ProductPictureSearchModel();
+            ProductVideoSearchModel = new ProductVideoSearchModel();
         }
 
         public bool NameRequired { get; set; }
@@ -32,7 +33,20 @@ namespace Nop.Web.Models.Customer
         public string FormattedCustomProductAttributes { get; set; }
         public IList<ProductAttributeModel> CustomProductAttributes { get; set; }
                
-        public IList<ProductLocalizedModel> Locales { get; set; }      
+        public IList<ProductLocalizedModel> Locales { get; set; }
+
+        public ProductPictureSearchModel ProductPictureSearchModel { get; set; }
+
+        public ProductVideoSearchModel ProductVideoSearchModel { get; set; }    
+
+        //pictures
+        public ProductPictureModel AddPictureModel { get; set; }
+        public IList<ProductPictureModel> ProductPictureModels { get; set; }
+
+        //video
+        public ProductVideoModel AddVideoModel { get; set; }    
+        public IList<ProductVideoModel> ProductVideoModels { get; set; }
+
     }
 
     public partial record ProductLocalizedModel : ILocalizedLocaleModel
