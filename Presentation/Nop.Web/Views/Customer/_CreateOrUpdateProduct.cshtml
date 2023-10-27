@@ -6,17 +6,13 @@
     // const string hideInfoBlockAttributeName = "ProductPage.HideInfoBlock";
     // var customer = await workContext.GetCurrentCustomerAsync();
     // var hideInfoBlock = showTour ? false : await genericAttributeService.GetAttributeAsync<bool>(customer, hideInfoBlockAttributeName);
-
+    NopHtml.AppendScriptParts(ResourceLocation.Head, "~/lib_npm/jquery/jquery.min.js");
 }
-
-<script src="~/lib_npm/jquery-tageditor/jquery.caret.min.js"></script>
-<script src="~/lib_npm/jquery-tageditor/jquery.tag-editor.min.js"></script>
-<link rel="stylesheet" href="~/lib_npm/jquery-tageditor/jquery.tag-editor.css">
 
 <input class="product-id" asp-for="Id" type="hidden" />
 <div class="edit-product">
     <div class="inputs">
-        <label asp-for="Name" asp-postfix=":"></label>
+        <label asp-for="Name" asp-postfix="-:"></label>
         <input asp-for="Name" />
         <nop-required />
         <span asp-validation-for="Name"></span>
@@ -33,24 +29,28 @@
         <nop-required />
         <span asp-validation-for="FullDescription"></span>
     </div>
-    
-    <div class="card-body">
-        @if (Model.Id > 0)
-        {
-            <nop-tabs id="productmultimedia-edit" asp-tab-name-to-select="tab-pictures" asp-render-selected-tab-input="false">
-                <nop-tab asp-name="tab-pictures" asp-title="@T("Admin.Catalog.Products.Multimedia.Pictures")" asp-default="true">@await Html.PartialAsync("_CreateOrUpdate.Multimedia.Pictures", Model)</nop-tab>
-                <nop-tab asp-name="tab-videos" asp-title="@T("Admin.Catalog.Products.Multimedia.Videos")">@await Html.PartialAsync("_CreateOrUpdate.Multimedia.Videos", Model)</nop-tab>
-            </nop-tabs>
-        }
-        else
-        {
-            <div class="card card-default">
-                <div class="card-body">
-                    @T("Admin.Catalog.Products.Multimedia.Videos.SaveBeforeEdit")
+
+
+
+    <nop-cards id="product-cards">
+        <div class="card-body">
+            @if (Model.Id > 0)
+            {
+                <nop-tabs id="productmultimedia-edit" asp-tab-name-to-select="tab-pictures" asp-render-selected-tab-input="false">
+                    <nop-tab asp-name="tab-pictures" asp-title="@T("Admin.Catalog.Products.Multimedia.Pictures")" asp-default="true">@await Html.PartialAsync("_CreateOrUpdate.Multimedia.Pictures", Model)</nop-tab>
+                    @* <nop-tab asp-name="tab-videos" asp-title="@T("Admin.Catalog.Products.Multimedia.Videos")">@await Html.PartialAsync("_CreateOrUpdate.Multimedia.Videos", Model)</nop-tab> *@
+                </nop-tabs>
+            }
+            else
+            {
+                <div class="card card-default">
+                    <div class="card-body">
+                        @T("Admin.Catalog.Products.Multimedia.Videos.SaveBeforeEdit")
+                    </div>
                 </div>
-            </div>
-        }
-    </div>
+            }
+        </div>
+    </nop-cards>
 
     @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductBottom, additionalData = Model })
 

@@ -12,6 +12,11 @@
 {
     @await Component.InvokeAsync(typeof(CustomerNavigationViewComponent), new { selectedTabId = CustomerNavigationEnum.CustomerProducts })
 }
+
+
+<script src="~/lib_npm/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="~/lib_npm/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+
 <form asp-route="CustomerProductEdit" method="post">
     <div class="page account-page product-edit-page">
         <div class="page-title">
