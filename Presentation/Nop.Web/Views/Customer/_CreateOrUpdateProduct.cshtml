@@ -6,7 +6,8 @@
     // const string hideInfoBlockAttributeName = "ProductPage.HideInfoBlock";
     // var customer = await workContext.GetCurrentCustomerAsync();
     // var hideInfoBlock = showTour ? false : await genericAttributeService.GetAttributeAsync<bool>(customer, hideInfoBlockAttributeName);
-    NopHtml.AppendScriptParts(ResourceLocation.Head, "~/lib_npm/jquery/jquery.min.js");
+    NopHtml.AppendScriptParts(ResourceLocation.Head, "~/lib_npm/jquery/jquery.min.js"); 
+    
 }
 
 <input class="product-id" asp-for="Id" type="hidden" />
@@ -29,8 +30,6 @@
         <nop-required />
         <span asp-validation-for="FullDescription"></span>
     </div>
-
-
 
     <nop-cards id="product-cards">
         <div class="card-body">
