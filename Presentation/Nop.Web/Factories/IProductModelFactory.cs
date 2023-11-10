@@ -18,6 +18,17 @@ namespace Nop.Web.Factories
     public partial interface IProductModelFactory
     {
         /// <summary>
+        /// Prepare paged product picture list model
+        /// </summary>
+        /// <param name="searchModel">Product picture search model</param>
+        /// <param name="product">Product</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation
+        /// The task result contains the product picture list model
+        /// </returns>
+        Task<ProductPictureListModel> PrepareProductPictureListModelAsync(ProductPictureSearchModel searchModel, Product product);
+
+        /// <summary>
         /// Get the product template view path
         /// </summary>
         /// <param name="product">Product</param>

@@ -2085,6 +2085,11 @@ namespace Nop.Web.Factories
                 var prova = await _workContext.GetCurrentVendorAsync();
             }
         }
+
+        public Task<Areas.Admin.Models.Catalog.ProductPictureListModel> PrepareProductPictureListModelAsync(Areas.Admin.Models.Catalog.ProductPictureSearchModel searchModel, Product product)
+        {
+            throw new NotImplementedException();
+        }
         #endregion
     }
 }
