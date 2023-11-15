@@ -16,17 +16,21 @@ using Nop.Services.Customers;
 using Nop.Services.Html;
 using Nop.Services.Localization;
 using Nop.Services.Logging;
+using Nop.Services.Media;
 using Nop.Services.Messages;
 using Nop.Services.Orders;
 using Nop.Services.Security;
 using Nop.Services.Seo;
 using Nop.Services.Stores;
+using Nop.Web.Areas.Admin.Models.Catalog;
 using Nop.Web.Factories;
 using Nop.Web.Framework;
 using Nop.Web.Framework.Controllers;
+using Nop.Web.Framework.Mvc;
 using Nop.Web.Framework.Mvc.Filters;
 using Nop.Web.Framework.Mvc.Routing;
 using Nop.Web.Models.Catalog;
+using CustomerProductPictureSearchModel = Nop.Web.Models.Catalog.CustomerProductPictureSearchModel;
 
 namespace Nop.Web.Controllers
 {
@@ -47,6 +51,7 @@ namespace Nop.Web.Controllers
         private readonly INopUrlHelper _nopUrlHelper;
         private readonly IOrderService _orderService;
         private readonly IPermissionService _permissionService;
+        private readonly IPictureService _pictureService;
         private readonly IProductAttributeParser _productAttributeParser;
         private readonly IProductModelFactory _productModelFactory;
         private readonly IProductService _productService;
@@ -152,6 +157,149 @@ namespace Nop.Web.Controllers
                 productId: product.Id,
                 osIds: new List<int> { (int)OrderStatus.Complete },
                 pageSize: 1)).Any();
+        }
+
+        #endregion
+
+        #region Product pictures
+
+        [HttpPost]
+        [IgnoreAntiforgeryToken]
+        public virtual async Task<IActionResult> ProductPictureAdd(int productId, IFormCollection form)
+        {
+            if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageProducts))
+                return AccessDeniedView();
+
+            if (productId == 0)
+                throw new ArgumentException();
+
+            //try to get a product with the specified id
+            var product = await _productService.GetProductByIdAsync(productId)
+                ?? throw new ArgumentException("No product found with the specified id");
+
+            var files = form.Files.ToList();
+            if (!files.Any())
+                return Json(new { success = false });
+
+            //a vendor should have access only to his products
+            var currentVendor = await _workContext.GetCurrentVendorAsync();
+            if (currentVendor != null && product.VendorId != currentVendor.Id)
+                return RedirectToAction("List");
+            try
+            {
+                foreach (var file in files)
+                {
+                    //insert picture
+                    var picture = await _pictureService.InsertPictureAsync(file);
+
+                    await _pictureService.SetSeoFilenameAsync(picture.Id, await _pictureService.GetPictureSeNameAsync(product.Name));
+
+                    await _productService.InsertProductPictureAsync(new ProductPicture
+                    {
+                        PictureId = picture.Id,
+                        ProductId = product.Id,
+                        DisplayOrder = 0
+                    });
+                }
+            }
+            catch (Exception exc)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = $"{await _localizationService.GetResourceAsync("Admin.Catalog.Products.Multimedia.Pictures.Alert.PictureAdd")} {exc.Message}",
+                });
+            }
+
+            return Json(new { success = true });
+        }
+
+        [HttpPost]
+        public virtual async Task<IActionResult> ProductPictureList(CustomerProductPictureSearchModel searchModel)
+        {
+            if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageProducts))
+                return await AccessDeniedDataTablesJson();
+
+            //try to get a product with the specified id
+            var product = await _productService.GetProductByIdAsync(searchModel.ProductId)
+                ?? throw new ArgumentException("No product found with the specified id");
+
+            //a vendor should have access only to his products
+            var currentVendor = await _workContext.GetCurrentVendorAsync();
+            if (currentVendor != null && product.VendorId != currentVendor.Id)
+                return Content("This is not your product");
+
+            //prepare model
+            var model = await _productModelFactory.PrepareCustomerProductPictureListModelAsync(searchModel, product);
+
+            return Json(model);
+        }
+
+        [HttpPost]
+        public virtual async Task<IActionResult> ProductPictureUpdate(CustomerProductPictureModel model)
+        {
+            if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageProducts))
+                return AccessDeniedView();
+
+            //try to get a product picture with the specified id
+            var productPicture = await _productService.GetProductPictureByIdAsync(model.Id)
+                ?? throw new ArgumentException("No product picture found with the specified id");
+
+            //a vendor should have access only to his products
+            var currentVendor = await _workContext.GetCurrentVendorAsync();
+            if (currentVendor != null)
+            {
+                var product = await _productService.GetProductByIdAsync(productPicture.ProductId);
+                if (product != null && product.VendorId != currentVendor.Id)
+                    return Content("This is not your product");
+            }
+
+            //try to get a picture with the specified id
+            var picture = await _pictureService.GetPictureByIdAsync(productPicture.PictureId)
+                ?? throw new ArgumentException("No picture found with the specified id");
+
+            await _pictureService.UpdatePictureAsync(picture.Id,
+                await _pictureService.LoadPictureBinaryAsync(picture),
+                picture.MimeType,
+                picture.SeoFilename,
+                model.OverrideAltAttribute,
+                model.OverrideTitleAttribute);
+
+            productPicture.DisplayOrder = model.DisplayOrder;
+            await _productService.UpdateProductPictureAsync(productPicture);
+
+            return new NullJsonResult();
+        }
+
+        [HttpPost]
+        public virtual async Task<IActionResult> ProductPictureDelete(int id)
+        {
+            if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageProducts))
+                return AccessDeniedView();
+
+            //try to get a product picture with the specified id
+            var productPicture = await _productService.GetProductPictureByIdAsync(id)
+                ?? throw new ArgumentException("No product picture found with the specified id");
+
+            //a vendor should have access only to his products
+            var currentVendor = await _workContext.GetCurrentVendorAsync();
+            if (currentVendor != null)
+            {
+                var product = await _productService.GetProductByIdAsync(productPicture.ProductId);
+                if (product != null && product.VendorId != currentVendor.Id)
+                    return Content("This is not your product");
+            }
+
+            var pictureId = productPicture.PictureId;
+            await _productService.DeleteProductPictureAsync(productPicture);
+
+            //try to get a picture with the specified id
+            var picture = await _pictureService.GetPictureByIdAsync(pictureId)
+                ?? throw new ArgumentException("No picture found with the specified id");
+
+            await _pictureService.DeletePictureAsync(picture);
+
+            return new NullJsonResult();
         }
 
         #endregion

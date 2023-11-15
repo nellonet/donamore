@@ -5,6 +5,8 @@ using Nop.Web.Framework.Mvc.ModelBinding;
 using Nop.Web.Framework.Models;
 using Nop.Web.Models.Common;
 using Nop.Web.Areas.Admin.Models.Catalog;
+using Nop.Web.Models.Catalog;
+using ProductAttributeModel = Nop.Web.Models.Catalog.ProductAttributeModel;
 
 namespace Nop.Web.Models.Customer
 {
@@ -13,7 +15,7 @@ namespace Nop.Web.Models.Customer
         public CustomerProductModel()
         {
             Locales = new List<ProductLocalizedModel>();
-            ProductPictureSearchModel = new ProductPictureSearchModel();
+            ProductPictureSearchModel = new CustomerProductPictureSearchModel();
             ProductVideoSearchModel = new ProductVideoSearchModel();
         }
 
@@ -35,13 +37,13 @@ namespace Nop.Web.Models.Customer
                
         public IList<ProductLocalizedModel> Locales { get; set; }
 
-        public ProductPictureSearchModel ProductPictureSearchModel { get; set; }
+        public CustomerProductPictureSearchModel ProductPictureSearchModel { get; set; }
 
         public ProductVideoSearchModel ProductVideoSearchModel { get; set; }    
 
         //pictures
-        public ProductPictureModel AddPictureModel { get; set; }
-        public IList<ProductPictureModel> ProductPictureModels { get; set; }
+        public CustomerProductPictureModel AddPictureModel { get; set; }
+        public IList<CustomerProductPictureModel> ProductPictureModels { get; set; }
 
         //video
         public ProductVideoModel AddVideoModel { get; set; }    

@@ -45,6 +45,7 @@ using Nop.Web.Framework;
 using Nop.Web.Framework.Controllers;
 using Nop.Web.Framework.Mvc.Filters;
 using Nop.Web.Framework.Validators;
+using Nop.Web.Models.Catalog;
 using Nop.Web.Models.Customer;
 
 namespace Nop.Web.Controllers
@@ -2179,7 +2180,7 @@ namespace Nop.Web.Controllers
         }
 
         [HttpPost]
-        public virtual async Task<IActionResult> ProductPictureList(ProductPictureSearchModel searchModel)
+        public virtual async Task<IActionResult> ProductPictureList(CustomerProductPictureSearchModel searchModel)
         {
             if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageProducts))
                 return await AccessDeniedDataTablesJson();
@@ -2194,7 +2195,7 @@ namespace Nop.Web.Controllers
                 return Content("This is not your product");
 
             //prepare model
-            var model = await _productModelFactory.PrepareProductPictureListModelAsync(searchModel, product);
+            var model = await _productModelFactory.PrepareCustomerProductPictureListModelAsync(searchModel, product);
 
             return Json(model);
         }

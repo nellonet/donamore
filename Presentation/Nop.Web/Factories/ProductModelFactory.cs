@@ -30,12 +30,21 @@ using Nop.Services.Shipping.Date;
 using Nop.Services.Stores;
 using Nop.Services.Tax;
 using Nop.Services.Vendors;
+using Nop.Web.Areas.Admin.Infrastructure.Mapper.Extensions;
+using Nop.Web.Areas.Admin.Models.Catalog;
 using Nop.Web.Framework.Factories;
+using Nop.Web.Framework.Models.Extensions;
 using Nop.Web.Infrastructure.Cache;
 using Nop.Web.Models.Catalog;
 using Nop.Web.Models.Common;
 using Nop.Web.Models.Customer;
 using Nop.Web.Models.Media;
+using ProductAttributeModel = Nop.Web.Models.Catalog.ProductAttributeModel;
+using ProductReviewModel = Nop.Web.Models.Catalog.ProductReviewModel;
+using ProductReviewReviewTypeMappingModel = Nop.Web.Models.Catalog.ProductReviewReviewTypeMappingModel;
+using ProductSpecificationAttributeModel = Nop.Web.Models.Catalog.ProductSpecificationAttributeModel;
+using ProductTagModel = Nop.Web.Models.Catalog.ProductTagModel;
+using ReviewTypeModel = Nop.Web.Models.Catalog.ReviewTypeModel;
 
 namespace Nop.Web.Factories
 {
@@ -187,7 +196,7 @@ namespace Nop.Web.Factories
         /// A task that represents the asynchronous operation
         /// The task result contains the list of product specification model
         /// </returns>
-        protected virtual async Task<IList<ProductSpecificationAttributeModel>> PrepareProductSpecificationAttributeModelAsync(Product product, SpecificationAttributeGroup group)
+        protected virtual async Task<IList<Models.Catalog.ProductSpecificationAttributeModel>> PrepareProductSpecificationAttributeModelAsync(Product product, SpecificationAttributeGroup group)
         {
             if (product == null)
                 throw new ArgumentNullException(nameof(product));
@@ -2086,7 +2095,48 @@ namespace Nop.Web.Factories
             }
         }
 
-        public Task<Areas.Admin.Models.Catalog.ProductPictureListModel> PrepareProductPictureListModelAsync(Areas.Admin.Models.Catalog.ProductPictureSearchModel searchModel, Product product)
+        public virtual async Task<CustomerProductPictureListModel> PrepareCustomerProductPictureListModelAsync(CustomerProductPictureSearchModel searchModel, Product product)
+        {
+            if (searchModel == null)
+                throw new ArgumentNullException(nameof(searchModel));
+
+            if (product == null)
+                throw new ArgumentNullException(nameof(product));
+
+            //get product pictures
+            var productPictures = (await _productService.GetProductPicturesByProductIdAsync(product.Id)).ToPagedList(searchModel);
+
+            //prepare grid model
+            var model = await new CustomerProductPictureListModel().PrepareToGridAsync(searchModel, productPictures, () =>
+            {
+                return productPictures.SelectAwait(async productPicture =>
+                {
+                    //fill in model values from the entity
+                    var productPictureModel = productPicture.ToModel<CustomerProductPictureModel>();
+
+                    //fill in additional values (not existing in the entity)
+                    var picture = (await _pictureService.GetPictureByIdAsync(productPicture.PictureId))
+                        ?? throw new Exception("Picture cannot be loaded");
+
+                    productPictureModel.PictureUrl = (await _pictureService.GetPictureUrlAsync(picture)).Url;
+
+                    productPictureModel.OverrideAltAttribute = picture.AltAttribute;
+                    productPictureModel.OverrideTitleAttribute = picture.TitleAttribute;
+
+                    return productPictureModel;
+                });
+            });
+
+            return model;
+        }
+           
+
+        public Task<ProductPictureListModel> PrepareCustomerProductPictureListModelAsync(ProductPictureSearchModel searchModel, Product product)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<ProductPictureListModel> IProductModelFactory.PrepareCustomerProductPictureListModelAsync(CustomerProductPictureSearchModel searchModel, Product product)
         {
             throw new NotImplementedException();
         }
