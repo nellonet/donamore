@@ -9,7 +9,7 @@
     @await Html.PartialAsync("Table", new DataTablesModel
     {
         Name = "productpictures-grid",
-        UrlRead = new DataUrl("ProductPictureList", "Customer", new RouteValueDictionary { [nameof(Model.ProductPictureSearchModel.ProductId)] = Model.ProductPictureSearchModel.ProductId }),
+        UrlRead = new DataUrl("ProductPictureList", "Customer", new RouteValueDictionary { [nameof(Model.ProductPictureSearchModel.ProductId)] = Model.Id }),
         UrlDelete = new DataUrl("ProductPictureDelete", "Product", null),
         UrlUpdate = new DataUrl("ProductPictureUpdate", "Product", null),
         Length = Model.ProductPictureSearchModel.PageSize,

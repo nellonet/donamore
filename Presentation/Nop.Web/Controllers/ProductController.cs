@@ -84,6 +84,7 @@ namespace Nop.Web.Controllers
             INopUrlHelper nopUrlHelper,
             IOrderService orderService,
             IPermissionService permissionService,
+            IPictureService pictureService,
             IProductAttributeParser productAttributeParser,
             IProductModelFactory productModelFactory,
             IProductService productService,
@@ -111,6 +112,7 @@ namespace Nop.Web.Controllers
             _localizationService = localizationService;
             _nopUrlHelper = nopUrlHelper;
             _orderService = orderService;
+            _pictureService = pictureService;
             _permissionService = permissionService;
             _productAttributeParser = productAttributeParser;
             _productModelFactory = productModelFactory;
@@ -215,7 +217,7 @@ namespace Nop.Web.Controllers
         }
 
         [HttpPost]
-        public virtual async Task<IActionResult> ProductPictureList(CustomerProductPictureSearchModel searchModel)
+        public virtual async Task<IActionResult> ProductPictureList(ProductPictureSearchModel searchModel)
         {
             if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageProducts))
                 return await AccessDeniedDataTablesJson();

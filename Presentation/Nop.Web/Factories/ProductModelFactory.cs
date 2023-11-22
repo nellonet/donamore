@@ -2094,8 +2094,18 @@ namespace Nop.Web.Factories
                 var prova = await _workContext.GetCurrentVendorAsync();
             }
         }
+                
 
-        public virtual async Task<CustomerProductPictureListModel> PrepareCustomerProductPictureListModelAsync(CustomerProductPictureSearchModel searchModel, Product product)
+        /// <summary>
+        /// Prepare paged product picture list model
+        /// </summary>
+        /// <param name="searchModel">Product picture search model</param>
+        /// <param name="product">Product</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation
+        /// The task result contains the product picture list model
+        /// </returns>
+        public virtual async Task<ProductPictureListModel> PrepareCustomerProductPictureListModelAsync(ProductPictureSearchModel searchModel, Product product)
         {
             if (searchModel == null)
                 throw new ArgumentNullException(nameof(searchModel));
@@ -2107,12 +2117,12 @@ namespace Nop.Web.Factories
             var productPictures = (await _productService.GetProductPicturesByProductIdAsync(product.Id)).ToPagedList(searchModel);
 
             //prepare grid model
-            var model = await new CustomerProductPictureListModel().PrepareToGridAsync(searchModel, productPictures, () =>
+            var model = await new ProductPictureListModel().PrepareToGridAsync(searchModel, productPictures, () =>
             {
                 return productPictures.SelectAwait(async productPicture =>
                 {
                     //fill in model values from the entity
-                    var productPictureModel = productPicture.ToModel<CustomerProductPictureModel>();
+                    var productPictureModel = productPicture.ToModel<ProductPictureModel>();
 
                     //fill in additional values (not existing in the entity)
                     var picture = (await _pictureService.GetPictureByIdAsync(productPicture.PictureId))
@@ -2128,17 +2138,6 @@ namespace Nop.Web.Factories
             });
 
             return model;
-        }
-           
-
-        public Task<ProductPictureListModel> PrepareCustomerProductPictureListModelAsync(ProductPictureSearchModel searchModel, Product product)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<ProductPictureListModel> IProductModelFactory.PrepareCustomerProductPictureListModelAsync(CustomerProductPictureSearchModel searchModel, Product product)
-        {
-            throw new NotImplementedException();
         }
         #endregion
     }
