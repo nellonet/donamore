@@ -2139,6 +2139,47 @@ namespace Nop.Web.Factories
 
             return model;
         }
+
+        /// <summary>
+        /// Prepare paged product video list model
+        /// </summary>
+        /// <param name="searchModel">Product video search model</param>
+        /// <param name="product">Product</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation
+        /// The task result contains the product video list model
+        /// </returns>
+        public virtual async Task<ProductVideoListModel> PrepareCustomerProductVideoListModelAsync(ProductVideoSearchModel searchModel, Product product)
+        {
+            if (searchModel == null)
+                throw new ArgumentNullException(nameof(searchModel));
+
+            if (product == null)
+                throw new ArgumentNullException(nameof(product));
+
+            //get product videos
+            var productVideos = (await _productService.GetProductVideosByProductIdAsync(product.Id)).ToPagedList(searchModel);
+
+            //prepare grid model
+            var model = await new ProductVideoListModel().PrepareToGridAsync(searchModel, productVideos, () =>
+            {
+                return productVideos.SelectAwait(async productVideo =>
+                {
+                    //fill in model values from the entity
+                    var productVideoModel = productVideo.ToModel<ProductVideoModel>();
+
+                    //fill in additional values (not existing in the entity)
+                    var video = (await _videoService.GetVideoByIdAsync(productVideo.VideoId))
+                        ?? throw new Exception("Video cannot be loaded");
+
+                    productVideoModel.VideoUrl = video.VideoUrl;
+
+                    return productVideoModel;
+                });
+            });
+
+            return model;
+        }
         #endregion
     }
 }

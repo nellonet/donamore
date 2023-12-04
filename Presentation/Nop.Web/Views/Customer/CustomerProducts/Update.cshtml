@@ -1,6 +1,6 @@
 ﻿@model CustomerProductEditModel
 @{
-    Layout = "_CustomerInfoLayout";
+    Layout = "_CustomerProductsLayout.cshtml";
 
     //title
     NopHtml.AddTitleParts(T("PageTitle.Account").Text);
@@ -14,6 +14,8 @@
 }
 
 
+
+
 <form asp-route="CustomerProductEdit" method="post">
     <div class="page account-page product-edit-page">
         <div class="page-title">
@@ -24,7 +26,7 @@
             @{
                 var dataDictProduct = new ViewDataDictionary(ViewData);
                 dataDictProduct.TemplateInfo.HtmlFieldPrefix = "Product";
-                @await Html.PartialAsync("_CreateOrUpdateProduct", Model.Product, dataDictProduct)
+                @await Html.PartialAsync("_CreateOrUpdate.cshtml", Model.Product, dataDictProduct)
             }
             <div class="buttons">
                 <button type="submit" class="button-1 save-address-button">@T("Common.Save")</button>
@@ -32,3 +34,4 @@
         </div>
     </div>
 </form>
+

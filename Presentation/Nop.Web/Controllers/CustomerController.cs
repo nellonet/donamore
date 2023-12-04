@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -43,7 +44,9 @@ using Nop.Web.Extensions;
 using Nop.Web.Factories;
 using Nop.Web.Framework;
 using Nop.Web.Framework.Controllers;
+using Nop.Web.Framework.Mvc;
 using Nop.Web.Framework.Mvc.Filters;
+using Nop.Web.Framework.Mvc.ModelBinding;
 using Nop.Web.Framework.Validators;
 using Nop.Web.Models.Catalog;
 using Nop.Web.Models.Customer;
@@ -103,6 +106,9 @@ namespace Nop.Web.Controllers
         private readonly MultiFactorAuthenticationSettings _multiFactorAuthenticationSettings;
         private readonly StoreInformationSettings _storeInformationSettings;
         private readonly TaxSettings _taxSettings;
+        private readonly IWebHelper _webHelper;
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IVideoService _videoService;
 
         #endregion
 
@@ -155,7 +161,11 @@ namespace Nop.Web.Controllers
             MediaSettings mediaSettings,
             MultiFactorAuthenticationSettings multiFactorAuthenticationSettings,
             StoreInformationSettings storeInformationSettings,
-            TaxSettings taxSettings)
+            TaxSettings taxSettings,
+
+            IWebHelper webHelper,
+            IHttpClientFactory httpClientFactory,
+            IVideoService videoService)
         {
             _addressSettings = addressSettings;
             _captchaSettings = captchaSettings;
@@ -205,6 +215,9 @@ namespace Nop.Web.Controllers
             _multiFactorAuthenticationSettings = multiFactorAuthenticationSettings;
             _storeInformationSettings = storeInformationSettings;
             _taxSettings = taxSettings;
+            _webHelper = webHelper;
+            _httpClientFactory = httpClientFactory;
+            _videoService = videoService;
         }
 
         #endregion
@@ -1634,7 +1647,7 @@ namespace Nop.Web.Controllers
                 product: null,
                 excludeProperties: false,
                 productSettings: _productSettings);
-            return View(model);
+            return View("~/Views/Customer/CustomerProducts/Update.cshtml", model);
         }
 
         [HttpPost]
@@ -1687,7 +1700,7 @@ namespace Nop.Web.Controllers
                 product: product,
                 excludeProperties: false,
                 productSettings: _productSettings);
-            return View(model);
+            return View("~/Views/Customer/CustomerProducts/Update.cshtml",model);
         }
 
         [HttpPost]
@@ -2200,10 +2213,182 @@ namespace Nop.Web.Controllers
 
             return Json(model);
         }
-        
+
+        [HttpPost]
+        public virtual async Task<IActionResult> ProductVideoList(ProductVideoSearchModel searchModel)
+        {
+            if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageProducts))
+                return await AccessDeniedDataTablesJson();
+
+            //try to get a product with the specified id
+            var product = await _productService.GetProductByIdAsync(searchModel.ProductId)
+                ?? throw new ArgumentException("No product found with the specified id");
+
+            //a vendor should have access only to his products
+            var currentVendor = await _workContext.GetCurrentVendorAsync();
+            if (currentVendor != null && product.VendorId != currentVendor.Id)
+                return Content("This is not your product");
+
+            //prepare model
+            var model = await _productModelFactory.PrepareCustomerProductVideoListModelAsync(searchModel, product);
+
+            return Json(model);
+        }
+
+        [HttpPost]
+        public virtual async Task<IActionResult> ProductVideoAdd(int productId, [Validate] ProductVideoModel model)
+        {
+            if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageProducts))
+                return AccessDeniedView();
+
+            if (productId == 0)
+                throw new ArgumentException();
+
+            //try to get a product with the specified id
+            var product = await _productService.GetProductByIdAsync(productId)
+                ?? throw new ArgumentException("No product found with the specified id");
+
+            var videoUrl = model.VideoUrl.TrimStart('~');
+
+            try
+            {
+                await PingVideoUrlAsync(videoUrl);
+            }
+            catch (Exception exc)
+            {
+                return Json(new
+                {
+                    success = false,
+                    error = $"{await _localizationService.GetResourceAsync("Admin.Catalog.Products.Multimedia.Videos.Alert.VideoAdd")} {exc.Message}",
+                });
+            }
+
+            if (!ModelState.IsValid)
+                return ErrorJson(ModelState.SerializeErrors());
+
+            //a vendor should have access only to his products
+            var currentVendor = await _workContext.GetCurrentVendorAsync();
+            if (currentVendor != null && product.VendorId != currentVendor.Id)
+                return RedirectToAction("List");
+            try
+            {
+                var video = new Video
+                {
+                    VideoUrl = videoUrl
+                };
+
+                //insert video
+                await _videoService.InsertVideoAsync(video);
+
+                await _productService.InsertProductVideoAsync(new ProductVideo
+                {
+                    VideoId = video.Id,
+                    ProductId = product.Id,
+                    DisplayOrder = model.DisplayOrder
+                });
+            }
+            catch (Exception exc)
+            {
+                return Json(new
+                {
+                    success = false,
+                    error = $"{await _localizationService.GetResourceAsync("Admin.Catalog.Products.Multimedia.Videos.Alert.VideoAdd")} {exc.Message}",
+                });
+            }
+
+            return Json(new { success = true });
+        }
+
+        [HttpPost]
+        public virtual async Task<IActionResult> ProductVideoUpdate([Validate] ProductVideoModel model)
+        {
+            if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageProducts))
+                return AccessDeniedView();
+
+            //try to get a product picture with the specified id
+            var productVideo = await _productService.GetProductVideoByIdAsync(model.Id)
+                ?? throw new ArgumentException("No product video found with the specified id");
+
+            //a vendor should have access only to his products
+            var currentVendor = await _workContext.GetCurrentVendorAsync();
+            if (currentVendor != null)
+            {
+                var product = await _productService.GetProductByIdAsync(productVideo.ProductId);
+                if (product != null && product.VendorId != currentVendor.Id)
+                    return Content("This is not your product");
+            }
+
+            //try to get a video with the specified id
+            var video = await _videoService.GetVideoByIdAsync(productVideo.VideoId)
+                ?? throw new ArgumentException("No video found with the specified id");
+
+            var videoUrl = model.VideoUrl.TrimStart('~');
+
+            try
+            {
+                await PingVideoUrlAsync(videoUrl);
+            }
+            catch (Exception exc)
+            {
+                return Json(new
+                {
+                    success = false,
+                    error = $"{await _localizationService.GetResourceAsync("Admin.Catalog.Products.Multimedia.Videos.Alert.VideoUpdate")} {exc.Message}",
+                });
+            }
+
+            video.VideoUrl = videoUrl;
+
+            await _videoService.UpdateVideoAsync(video);
+
+            productVideo.DisplayOrder = model.DisplayOrder;
+            await _productService.UpdateProductVideoAsync(productVideo);
+
+            return new NullJsonResult();
+        }
+
+        [HttpPost]
+        public virtual async Task<IActionResult> ProductVideoDelete(int id)
+        {
+            if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageProducts))
+                return AccessDeniedView();
+
+            //try to get a product video with the specified id
+            var productVideo = await _productService.GetProductVideoByIdAsync(id)
+                ?? throw new ArgumentException("No product video found with the specified id");
+
+            //a vendor should have access only to his products
+            var currentVendor = await _workContext.GetCurrentVendorAsync();
+            if (currentVendor != null)
+            {
+                var product = await _productService.GetProductByIdAsync(productVideo.ProductId);
+                if (product != null && product.VendorId != currentVendor.Id)
+                    return Content("This is not your product");
+            }
+
+            var videoId = productVideo.VideoId;
+            await _productService.DeleteProductVideoAsync(productVideo);
+
+            //try to get a video with the specified id
+            var video = await _videoService.GetVideoByIdAsync(videoId)
+                ?? throw new ArgumentException("No video found with the specified id");
+
+            await _videoService.DeleteVideoAsync(video);
+
+            return new NullJsonResult();
+        }
+
+
+        protected virtual async Task PingVideoUrlAsync(string videoUrl)
+        {
+            var path = videoUrl.StartsWith("/") ? $"{_webHelper.GetStoreLocation()}{videoUrl.TrimStart('/')}" : videoUrl;
+
+            var client = _httpClientFactory.CreateClient(NopHttpDefaults.DefaultHttpClient);
+            await client.GetStringAsync(path);
+        }
         #endregion
 
-        
+
         #endregion
     }
 }

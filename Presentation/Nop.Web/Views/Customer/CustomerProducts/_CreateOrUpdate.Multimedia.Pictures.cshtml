@@ -4,6 +4,10 @@
 @using Nop.Web.Areas.Admin.Models.Catalog;
 @using Nop.Web.Framework.Models.DataTables;
 
+
+
+
+
 <div class="card-body">
         
     @await Html.PartialAsync("Table", new DataTablesModel
@@ -77,13 +81,21 @@
                     ViewData["TableSelector"] = "#productpictures-grid";
                 }
                 <div class="col-md-3">
-                    <nop-label asp-for="AddPictureModel.PictureId" />
+                    <div class="label-wrapper">
+                        <label class="col-form-label">@T("admin.catalog.products.multimedia.pictures.fields.picture")</label>
+                        <div class="ico-help" title="@T("admin.catalog.products.multimedia.pictures.fields.picture.hint")">
+                            <i class="fas fa-question-circle"></i>
+                        </div>
+                    </div>
+                    @* <nop-label asp-for="AddPictureModel.PictureId" /> *@
                 </div>
                 <div class="col-md-9">
-                    <nop-editor asp-for="AddPictureModel.PictureId" />
+                    @Html.EditorFor(m => m.AddPictureModel.PictureId)
                     <span asp-validation-for="AddPictureModel.PictureId"></span>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+

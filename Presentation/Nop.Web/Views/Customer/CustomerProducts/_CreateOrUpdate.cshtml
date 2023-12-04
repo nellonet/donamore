@@ -2,8 +2,10 @@
 
 @{
     var showTour = ViewBag.ShowTour ?? false;
-
+    await Html.RenderPartialAsync("_CustomerProductsScripts.cshtml");
 }
+
+
 
 
 
@@ -33,8 +35,12 @@
             @if (Model.Id > 0)
             {
                 <nop-tabs id="productmultimedia-edit" asp-tab-name-to-select="tab-pictures" asp-render-selected-tab-input="false">
-                    <nop-tab asp-name="tab-pictures" asp-title="@T("Admin.Catalog.Products.Multimedia.Pictures")" asp-default="true">@await Html.PartialAsync("_CreateOrUpdate.Multimedia.Pictures", Model)</nop-tab>
-                    @* <nop-tab asp-name="tab-videos" asp-title="@T("Admin.Catalog.Products.Multimedia.Videos")">@await Html.PartialAsync("_CreateOrUpdate.Multimedia.Videos", Model)</nop-tab> *@
+                    <nop-tab asp-name="tab-pictures" asp-title="@T("Admin.Catalog.Products.Multimedia.Pictures")" asp-default="true">
+                        @await Html.PartialAsync("_CreateOrUpdate.Multimedia.Pictures.cshtml", Model)
+                    </nop-tab>
+                    <nop-tab asp-name="tab-videos" asp-title="@T("Admin.Catalog.Products.Multimedia.Videos")">
+                        @await Html.PartialAsync("_CreateOrUpdate.Multimedia.Videos.cshtml", Model)
+                    </nop-tab> 
                 </nop-tabs>
             }
             else
@@ -51,3 +57,4 @@
     @await Component.InvokeAsync(typeof(WidgetViewComponent), new { widgetZone = PublicWidgetZones.ProductBottom, additionalData = Model })
 
 </div>
+

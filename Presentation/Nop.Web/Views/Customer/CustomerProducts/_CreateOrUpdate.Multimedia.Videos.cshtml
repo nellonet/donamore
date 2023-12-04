@@ -8,9 +8,9 @@
     @await Html.PartialAsync("Table", new DataTablesModel
     {
         Name = "productvideos-grid",
-        UrlRead = new DataUrl("ProductVideoList", "Product", new RouteValueDictionary { [nameof(Model.ProductVideoSearchModel.ProductId)] = Model.ProductVideoSearchModel.ProductId }),
-        UrlDelete = new DataUrl("ProductVideoDelete", "Product", null),
-        UrlUpdate = new DataUrl("ProductVideoUpdate", "Product", null),
+        UrlRead = new DataUrl("ProductVideoList", "Customer", new RouteValueDictionary { [nameof(Model.ProductPictureSearchModel.ProductId)] = Model.Id }),
+        UrlDelete = new DataUrl("ProductVideoDelete", "Customer", null),
+        UrlUpdate = new DataUrl("ProductVideoUpdate", "Customer", null),
         Length = Model.ProductVideoSearchModel.PageSize,
         LengthMenu = Model.ProductVideoSearchModel.AvailablePageSizes,
         ColumnCollection = new List<ColumnProperty>
@@ -98,7 +98,7 @@
                     $.ajax({
                         cache: false,
                         type: "POST",
-                        url: "@Html.Raw(Url.Action("ProductVideoAdd", "Product", new { ProductId = Model.Id}))",
+                        url: "@Html.Raw(Url.Action("ProductVideoAdd", "Customer", new { ProductId = Model.Id }))",
                         data: postData,
                         success: function (data, textStatus, jqXHR) {
                             if (data.success) {
