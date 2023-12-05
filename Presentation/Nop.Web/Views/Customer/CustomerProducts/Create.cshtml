@@ -23,7 +23,7 @@
             @{
                 var dataDictProduct = new ViewDataDictionary(ViewData);
                 dataDictProduct.TemplateInfo.HtmlFieldPrefix = "Product";
-                @await Html.PartialAsync("_CreateOrUpdate.cshtml", Model.Product, dataDictProduct)
+                @await Html.PartialAsync("_CreateOrUpdate.cshtml", Model)
             }
             <div class="buttons">
                 <button type="submit" class="button-1 save-product-button">@T("Common.Save")</button>
