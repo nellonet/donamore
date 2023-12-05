@@ -66,7 +66,8 @@
                     <nop-label asp-for="AddVideoModel.VideoUrl" />
                 </div>
                 <div class="col-md-9">
-                    <nop-editor asp-for="AddVideoModel.VideoUrl" />
+                    <nop-editor asp-for="AddVideoModel.VideoUrl" class="required" />
+                    <nop-required />
                     <span asp-validation-for="AddVideoModel.VideoUrl"></span>
                 </div>
             </div>
@@ -76,6 +77,7 @@
                 </div>
                 <div class="col-md-9">
                     <nop-editor asp-for="AddVideoModel.DisplayOrder" />
+                    <nop-required />
                     <span asp-validation-for="AddVideoModel.DisplayOrder"></span>
                 </div>
             </div>
@@ -88,10 +90,20 @@
         <script>
             $(document).ready(function () {
                 $('#addProductVideo').click(function () {
+
+                    let video_url = $("#@Html.IdFor(model => model.AddVideoModel.VideoUrl)").val();
+
+                    if (video_url == null || video_url.trim() === "") {
+                        alert("Video url is required ");
+                        return;
+                    }
+
+                    let display_order = $("#@Html.IdFor(model => model.AddVideoModel.DisplayOrder)").val();
+
                     $('#addProductVideo').attr('disabled', true);
                     var postData = {
-                        VideoUrl: $("#@Html.IdFor(model => model.AddVideoModel.VideoUrl)").val(),
-                        DisplayOrder: $("#@Html.IdFor(model => model.AddVideoModel.DisplayOrder)").val()
+                        VideoUrl: video_url,
+                        DisplayOrder: display_order
                     };
                     addAntiForgeryToken(postData);
                     
@@ -118,7 +130,32 @@
                         }
                     });
                 });
+
+
+
+                $('#update-customer-product-form').on('submit', function (e) {
+                    let video_url = $("#@Html.IdFor(model => model.AddVideoModel.VideoUrl)").val();
+
+                    if (video_url == null || video_url.trim() === "") {
+                        e.preventDefault();
+
+                        $('[href="#tab-videos"]').tab('show');
+
+                        if ($("#video-error").length > 0)
+                            return;
+
+                        $('[data-valmsg-for="Product.AddVideoModel.VideoUrl"]').after($('<span style="color: red;" id="video-error">you have to write a url</span>'));
+                        
+                        
+                        return;
+                    }
+
+                });
             });
+
+
+
+           
         </script>
     </div>
 </div>

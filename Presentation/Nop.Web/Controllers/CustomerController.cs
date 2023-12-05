@@ -2241,7 +2241,7 @@ namespace Nop.Web.Controllers
             if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageProducts))
                 return AccessDeniedView();
 
-            if (productId == 0)
+            if (productId == 0 || string.IsNullOrEmpty(model.VideoUrl))
                 throw new ArgumentException();
 
             //try to get a product with the specified id
