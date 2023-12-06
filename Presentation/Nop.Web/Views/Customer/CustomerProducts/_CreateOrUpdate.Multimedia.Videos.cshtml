@@ -4,6 +4,8 @@
 @using Nop.Web.Areas.Admin.Models.Catalog;
 @using Nop.Web.Framework.Models.DataTables;
 
+
+
 <div class="card-body">
     @await Html.PartialAsync("Table", new DataTablesModel
     {
@@ -76,9 +78,17 @@
                     <nop-label asp-for="AddVideoModel.DisplayOrder" />
                 </div>
                 <div class="col-md-9">
-                    <nop-editor asp-for="AddVideoModel.DisplayOrder" />
-                    <nop-required />
-                    <span asp-validation-for="AddVideoModel.DisplayOrder"></span>
+                    
+                    <nop-editor asp-for="AddVideoModel.DisplayOrder"/>
+                    <span asp-validation-for="AddVideoModel.DisplayOrder" ></span>
+                    
+                    <style>
+                        .k-numeric-wrap{
+                            width: 50%;
+                        }
+                    </style>
+                    <script src="~/lib/kendo/2020.1.406/js/kendo.ui.core.min.js"></script>
+                    <script>$(document).ready(function () { $("#AddVideoModel_DisplayOrder").kendoNumericTextBox({ value: "0", decimals: 0, restrictDecimals: !0, format: "# " }) })</script>
                 </div>
             </div>
             <div class="form-group row">
@@ -147,3 +157,4 @@
         </script>
     </div>
 </div>
+
