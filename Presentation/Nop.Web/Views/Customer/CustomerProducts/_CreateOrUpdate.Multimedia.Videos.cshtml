@@ -94,7 +94,14 @@
                     let video_url = $("#@Html.IdFor(model => model.AddVideoModel.VideoUrl)").val();
 
                     if (video_url == null || video_url.trim() === "") {
-                        alert("Video url is required ");
+                        $('[href="#tab-videos"]').tab('show');
+
+                        if ($("#video-error").length > 0)
+                            return;
+
+                        $('[data-valmsg-for="AddVideoModel.VideoUrl"]').after($('<span style="color: red;" id="video-error">you have to write a url</span>'));
+
+
                         return;
                     }
 
@@ -132,30 +139,11 @@
                 });
 
 
-
-                $('#update-customer-product-form').on('submit', function (e) {
-                    let video_url = $("#@Html.IdFor(model => model.AddVideoModel.VideoUrl)").val();
-
-                    if (video_url == null || video_url.trim() === "") {
-                        e.preventDefault();
-
-                        $('[href="#tab-videos"]').tab('show');
-
-                        if ($("#video-error").length > 0)
-                            return;
-
-                        $('[data-valmsg-for="AddVideoModel.VideoUrl"]').after($('<span style="color: red;" id="video-error">you have to write a url</span>'));
-                        
-                        
-                        return;
-                    }
-
-                });
+                $('$("#@Html.IdFor(model => model.AddVideoModel.VideoUrl)")').on('focus', function () {
+                    $("#video-error").remove();
+                })
             });
 
-
-
-           
         </script>
     </div>
 </div>

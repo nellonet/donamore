@@ -1665,7 +1665,11 @@ namespace Nop.Web.Controllers
                 product.CreatedOnUtc = DateTime.UtcNow;
                 product.UpdatedOnUtc = DateTime.UtcNow;                
 
-                await _productService.InsertProductAsync(product);                
+                await _productService.InsertProductAsync(product);
+
+                
+
+
 
                 _notificationService.SuccessNotification(await _localizationService.GetResourceAsync("Account.CustomerProducts.Added"));
 
@@ -1729,6 +1733,13 @@ namespace Nop.Web.Controllers
                 product = model.Product.ToEntity(product);
                 //product.CustomAttributes = customAttributes;
                 await _productService.UpdateProductAsync(product);
+
+                if(model.Product.AddVideoModel != null && string.IsNullOrEmpty(model.Product.AddVideoModel.VideoUrl) == false)
+                {
+                    await PingVideoUrlAsync(model.Product.AddVideoModel.VideoUrl);
+                    await SaveVideoUrl(model.Product.AddVideoModel.VideoUrl, product.Id, model.Product.AddVideoModel.DisplayOrder);
+                }
+                
 
                 _notificationService.SuccessNotification(await _localizationService.GetResourceAsync("Account.CustomerAddresses.Updated"));
 
@@ -2272,20 +2283,7 @@ namespace Nop.Web.Controllers
                 return RedirectToAction("List");
             try
             {
-                var video = new Video
-                {
-                    VideoUrl = videoUrl
-                };
-
-                //insert video
-                await _videoService.InsertVideoAsync(video);
-
-                await _productService.InsertProductVideoAsync(new ProductVideo
-                {
-                    VideoId = video.Id,
-                    ProductId = product.Id,
-                    DisplayOrder = model.DisplayOrder
-                });
+               await SaveVideoUrl(videoUrl, product.Id, model.DisplayOrder);
             }
             catch (Exception exc)
             {
@@ -2378,6 +2376,24 @@ namespace Nop.Web.Controllers
             return new NullJsonResult();
         }
 
+
+        protected async Task SaveVideoUrl(string videoUrl, int productId, int displayOrder)
+        {
+            var video = new Video
+            {
+                VideoUrl = videoUrl
+            };
+
+            //insert video
+            await _videoService.InsertVideoAsync(video);
+
+            await _productService.InsertProductVideoAsync(new ProductVideo
+            {
+                VideoId = video.Id,
+                ProductId = productId,
+                DisplayOrder = displayOrder
+            });
+        }
 
         protected virtual async Task PingVideoUrlAsync(string videoUrl)
         {

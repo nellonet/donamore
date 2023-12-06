@@ -94,29 +94,5 @@
 </style>
 
 
-<script>
-    
 
-    function ValidateForm(form) {
-
-        console.log('@Html.NameFor(m => m.Product.AddVideoModel.VideoUrl)');
-        form.validate({
-            rules: {
-                '@Html.NameFor(m => m.Product.AddVideoModel.VideoUrl)': {
-                    required: true,
-                }
-            },
-            messages: {
-                '@Html.NameFor(m => m.Product.AddVideoModel.VideoUrl)': {
-                    required: 'Video url is required',
-                },
-            },
-            errorPlacement: function (error, element) {
-                element.after(error);
-            }
-            
-        });
-        return form.valid();
-    }
-</script>
 
