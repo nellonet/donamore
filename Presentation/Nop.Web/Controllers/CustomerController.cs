@@ -2152,8 +2152,9 @@ namespace Nop.Web.Controllers
         [IgnoreAntiforgeryToken]
         public virtual async Task<IActionResult> ProductPictureAdd(int productId, IFormCollection form)
         {
-            if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageProducts))
-                return AccessDeniedView();
+            var customer = await _workContext.GetCurrentCustomerAsync();
+            if (!await _customerService.IsRegisteredAsync(customer))
+                return Challenge();
 
             if (productId == 0)
                 throw new ArgumentException();
@@ -2200,6 +2201,109 @@ namespace Nop.Web.Controllers
         }
 
         [HttpPost]
+        public virtual async Task<IActionResult> ProductPictureUpdate(ProductPictureModel model)
+        {
+            var customer = await _workContext.GetCurrentCustomerAsync();
+            if (!await _customerService.IsRegisteredAsync(customer))
+                return Challenge();
+
+            //try to get a product picture with the specified id
+            var productPicture = await _productService.GetProductPictureByIdAsync(model.Id)
+                ?? throw new ArgumentException("No product picture found with the specified id");
+
+            //a vendor should have access only to his products
+            var currentVendor = await _workContext.GetCurrentVendorAsync();
+            if (currentVendor != null)
+            {
+                var product = await _productService.GetProductByIdAsync(productPicture.ProductId);
+                if (product != null && product.VendorId != currentVendor.Id)
+                    return Content("This is not your product");
+            }
+
+            //try to get a picture with the specified id
+            var picture = await _pictureService.GetPictureByIdAsync(productPicture.PictureId)
+                ?? throw new ArgumentException("No picture found with the specified id");
+
+            await _pictureService.UpdatePictureAsync(picture.Id,
+                await _pictureService.LoadPictureBinaryAsync(picture),
+                picture.MimeType,
+                picture.SeoFilename,
+                model.OverrideAltAttribute,
+                model.OverrideTitleAttribute);
+
+            productPicture.DisplayOrder = model.DisplayOrder;
+            await _productService.UpdateProductPictureAsync(productPicture);
+
+            return new NullJsonResult();
+        }
+
+        [HttpPost]
+        public virtual async Task<IActionResult> ProductPictureDelete(int id)
+        {
+            var customer = await _workContext.GetCurrentCustomerAsync();
+            if (!await _customerService.IsRegisteredAsync(customer))
+                return Challenge();
+
+            //try to get a product picture with the specified id
+            var productPicture = await _productService.GetProductPictureByIdAsync(id)
+                ?? throw new ArgumentException("No product picture found with the specified id");
+
+            //a vendor should have access only to his products
+            var currentVendor = await _workContext.GetCurrentVendorAsync();
+            if (currentVendor != null)
+            {
+                var product = await _productService.GetProductByIdAsync(productPicture.ProductId);
+                if (product != null && product.VendorId != currentVendor.Id)
+                    return Content("This is not your product");
+            }
+
+            var pictureId = productPicture.PictureId;
+            await _productService.DeleteProductPictureAsync(productPicture);
+
+            //try to get a picture with the specified id
+            var picture = await _pictureService.GetPictureByIdAsync(pictureId)
+                ?? throw new ArgumentException("No picture found with the specified id");
+
+            await _pictureService.DeletePictureAsync(picture);
+
+            return new NullJsonResult();
+        }
+
+        [HttpPost]
+        //do not validate request token (XSRF)
+        [IgnoreAntiforgeryToken]
+        public virtual async Task<IActionResult> PictureAsyncUpload()
+        {
+            //if (!await _permissionService.Authorize(StandardPermissionProvider.UploadPictures))
+            //    return Json(new { success = false, error = "You do not have required permissions" }, "text/plain");
+
+            var httpPostedFile = Request.Form.Files.FirstOrDefault();
+            if (httpPostedFile == null)
+                return Json(new { success = false, message = "No file uploaded" });
+
+            const string qqFileNameParameter = "qqfilename";
+
+            var qqFileName = Request.Form.ContainsKey(qqFileNameParameter)
+                ? Request.Form[qqFileNameParameter].ToString()
+                : string.Empty;
+
+            var picture = await _pictureService.InsertPictureAsync(httpPostedFile, qqFileName);
+
+            //when returning JSON the mime-type must be set to text/plain
+            //otherwise some browsers will pop-up a "Save As" dialog.
+
+            if (picture == null)
+                return Json(new { success = false, message = "Wrong file format" });
+
+            return Json(new
+            {
+                success = true,
+                pictureId = picture.Id,
+                imageUrl = (await _pictureService.GetPictureUrlAsync(picture, 100)).Url
+            });
+        }
+
+        [HttpPost]
         public virtual async Task<IActionResult> ProductPictureList(ProductPictureSearchModel searchModel)
         {
             var customer = await _workContext.GetCurrentCustomerAsync();
@@ -2224,8 +2328,9 @@ namespace Nop.Web.Controllers
         [HttpPost]
         public virtual async Task<IActionResult> ProductVideoList(ProductVideoSearchModel searchModel)
         {
-            if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageProducts))
-                return await AccessDeniedDataTablesJson();
+            var customer = await _workContext.GetCurrentCustomerAsync();
+            if (!await _customerService.IsRegisteredAsync(customer))
+                return Challenge();
 
             //try to get a product with the specified id
             var product = await _productService.GetProductByIdAsync(searchModel.ProductId)
@@ -2245,8 +2350,9 @@ namespace Nop.Web.Controllers
         [HttpPost]
         public virtual async Task<IActionResult> ProductVideoAdd(int productId, [Validate] ProductVideoModel model)
         {
-            if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageProducts))
-                return AccessDeniedView();
+            var customer = await _workContext.GetCurrentCustomerAsync();
+            if (!await _customerService.IsRegisteredAsync(customer))
+                return Challenge();
 
             if (productId == 0 || string.IsNullOrEmpty(model.VideoUrl))
                 throw new ArgumentException();
@@ -2296,8 +2402,9 @@ namespace Nop.Web.Controllers
         [HttpPost]
         public virtual async Task<IActionResult> ProductVideoUpdate([Validate] ProductVideoModel model)
         {
-            if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageProducts))
-                return AccessDeniedView();
+            var customer = await _workContext.GetCurrentCustomerAsync();
+            if (!await _customerService.IsRegisteredAsync(customer))
+                return Challenge();
 
             //try to get a product picture with the specified id
             var productVideo = await _productService.GetProductVideoByIdAsync(model.Id)
@@ -2344,8 +2451,9 @@ namespace Nop.Web.Controllers
         [HttpPost]
         public virtual async Task<IActionResult> ProductVideoDelete(int id)
         {
-            if (!await _permissionService.AuthorizeAsync(StandardPermissionProvider.ManageProducts))
-                return AccessDeniedView();
+            var customer = await _workContext.GetCurrentCustomerAsync();
+            if (!await _customerService.IsRegisteredAsync(customer))
+                return Challenge();
 
             //try to get a product video with the specified id
             var productVideo = await _productService.GetProductVideoByIdAsync(id)

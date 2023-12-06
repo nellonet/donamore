@@ -14,8 +14,8 @@
     {
         Name = "productpictures-grid",
         UrlRead = new DataUrl("ProductPictureList", "Customer", new RouteValueDictionary { [nameof(Model.ProductPictureSearchModel.ProductId)] = Model.Id }),
-        UrlDelete = new DataUrl("ProductPictureDelete", "Product", null),
-        UrlUpdate = new DataUrl("ProductPictureUpdate", "Product", null),
+        UrlDelete = new DataUrl("ProductPictureDelete", "Customer", null),
+        UrlUpdate = new DataUrl("ProductPictureUpdate", "Customer", null),
         Length = Model.ProductPictureSearchModel.PageSize,
         LengthMenu = Model.ProductPictureSearchModel.AvailablePageSizes,
         ColumnCollection = new List<ColumnProperty>
@@ -77,7 +77,7 @@
         <div class="card-body">
             <div class="form-group row">
                 @{
-                    ViewData["Endpoint"] = this.Url.Action("ProductPictureAdd", "Product", new { productId = Model.Id });
+                    ViewData["Endpoint"] = this.Url.Action("ProductPictureAdd", "Customer", new { productId = Model.Id });
                     ViewData["TableSelector"] = "#productpictures-grid";
                 }
                 <div class="col-md-3">
