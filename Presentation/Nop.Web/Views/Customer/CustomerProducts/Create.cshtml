@@ -13,7 +13,7 @@
     @await Component.InvokeAsync(typeof(CustomerNavigationViewComponent), new { selectedTabId = CustomerNavigationEnum.CustomerProducts })
 }
 
-<form asp-route="CustomerProductAdd" method="post">
+<form asp-controller="Customer" asp-action="ProductAdd" method="post">
     <div class="page account-page product-edit-page">
         <div class="page-title">
             <h1>@T("Account.MyAccount") - @T("Account.CustomerProducts.AddNew")</h1>

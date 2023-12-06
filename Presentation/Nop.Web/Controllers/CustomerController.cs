@@ -1647,7 +1647,7 @@ namespace Nop.Web.Controllers
                 product: null,
                 excludeProperties: false,
                 productSettings: _productSettings);
-            return View("~/Views/Customer/CustomerProducts/Update.cshtml", model);
+            return View("~/Views/Customer/CustomerProducts/Create.cshtml", model);
         }
 
         [HttpPost]
@@ -1663,17 +1663,13 @@ namespace Nop.Web.Controllers
                 product.VendorId = customer.Id;
                 product.ProductTypeId = 1;
                 product.CreatedOnUtc = DateTime.UtcNow;
-                product.UpdatedOnUtc = DateTime.UtcNow;                
 
                 await _productService.InsertProductAsync(product);
 
-                
-
-
-
                 _notificationService.SuccessNotification(await _localizationService.GetResourceAsync("Account.CustomerProducts.Added"));
 
-                return RedirectToRoute("CustomerProducts");
+                return RedirectToAction("ProductEdit", new { productId = product.Id });
+                //return RedirectToRoute("CustomerProducts");
             }
 
             //If we got this far, something failed, redisplay form
