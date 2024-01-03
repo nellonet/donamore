@@ -172,6 +172,11 @@ namespace Nop.Web.Models.Catalog
             //updating existing shopping cart or wishlist item?
             public int UpdatedShoppingCartItemId { get; set; }
             public ShoppingCartType? UpdateShoppingCartItemType { get; set; }
+
+            //noptech
+            public string RaisedPrice { get; set; }
+            public string TargetPrice { get; set; }
+            public int ProgressPercentage { get; set; }
         }
 
         public partial record ProductPriceModel : BaseNopModel

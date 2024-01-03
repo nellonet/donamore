@@ -9,6 +9,10 @@
     <div class="add-to-cart">
         @if (Model.CustomerEntersPrice)
         {
+            <div class="customer-entred-price-title">
+                <label for="file">@Model.RaisedPrice raised of @Model.TargetPrice goal</label>
+                <progress value="@Model.ProgressPercentage" max="100"> @Model.ProgressPercentage% </progress>
+            </div>
             <div class="customer-entered-price">
                 <div class="price-input">
                     <label asp-for="CustomerEnteredPrice" asp-postfix=":" class="enter-price-label"></label>
