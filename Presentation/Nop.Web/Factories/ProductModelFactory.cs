@@ -90,11 +90,12 @@ namespace Nop.Web.Factories
         private readonly IVideoService _videoService;
         private readonly IWebHelper _webHelper;
         private readonly IWorkContext _workContext;
+        private readonly IOrderService _orderService;
         private readonly MediaSettings _mediaSettings;
         private readonly OrderSettings _orderSettings;
         private readonly SeoSettings _seoSettings;
         private readonly ShippingSettings _shippingSettings;
-        private readonly VendorSettings _vendorSettings;        
+        private readonly VendorSettings _vendorSettings;
 
         #endregion
 
@@ -135,6 +136,7 @@ namespace Nop.Web.Factories
             IVideoService videoService,
             IWebHelper webHelper,
             IWorkContext workContext,
+            IOrderService orderService,
             MediaSettings mediaSettings,
             OrderSettings orderSettings,
             SeoSettings seoSettings,
@@ -175,6 +177,7 @@ namespace Nop.Web.Factories
             _vendorService = vendorService;
             _webHelper = webHelper;
             _workContext = workContext;
+            _orderService = orderService;
             _mediaSettings = mediaSettings;
             _orderSettings = orderSettings;
             _seoSettings = seoSettings;
@@ -262,7 +265,7 @@ namespace Nop.Web.Factories
                 productReview = await _staticCacheManager.GetAsync(cacheKey, async () =>
                 {
                     var productReviews = await _productService.GetAllProductReviewsAsync(productId: product.Id, approved: true, storeId: currentStore.Id);
-                    
+
                     return new ProductReviewOverviewModel
                     {
                         RatingSum = productReviews.Sum(pr => pr.Rating),
@@ -434,16 +437,16 @@ namespace Nop.Web.Factories
                             if (prices.Distinct().Count() > 1)
                             {
                                 (minPossiblePriceWithoutDiscount, minPossiblePriceWithDiscount) = prices.OrderBy(p => p.PriceWithDiscount).First();
-                                return new 
+                                return new
                                 {
-                                    PriceWithoutDiscount = minPossiblePriceWithoutDiscount, 
-                                    PriceWithDiscount = minPossiblePriceWithDiscount 
+                                    PriceWithoutDiscount = minPossiblePriceWithoutDiscount,
+                                    PriceWithDiscount = minPossiblePriceWithDiscount
                                 };
                             }
 
                             // show default price when required attributes available but no values added
                             (minPossiblePriceWithoutDiscount, minPossiblePriceWithDiscount, _, _) = await _priceCalculationService.GetFinalPriceAsync(product, customer, store);
-                            
+
                             //don't cache (return null) if there are no multiple prices
                             return null;
                         });
@@ -639,8 +642,8 @@ namespace Nop.Web.Factories
             var pictureSize = productThumbPictureSize ?? _mediaSettings.ProductThumbPictureSize;
 
             //prepare picture model
-            var cacheKey = _staticCacheManager.PrepareKeyForDefaultCache(NopModelCacheDefaults.ProductOverviewPicturesModelKey, 
-                product, pictureSize, true, _catalogSettings.DisplayAllPicturesOnCatalogPages, await _workContext.GetWorkingLanguageAsync(), 
+            var cacheKey = _staticCacheManager.PrepareKeyForDefaultCache(NopModelCacheDefaults.ProductOverviewPicturesModelKey,
+                product, pictureSize, true, _catalogSettings.DisplayAllPicturesOnCatalogPages, await _workContext.GetWorkingLanguageAsync(),
                 _webHelper.IsCurrentConnectionSecured(), await _storeContext.GetCurrentStoreAsync());
 
             var cachedPictures = await _staticCacheManager.GetAsync(cacheKey, async () =>
@@ -671,7 +674,7 @@ namespace Nop.Web.Factories
 
                 //all pictures
                 var pictures = (await _pictureService
-                    .GetPicturesByProductIdAsync(product.Id,  _catalogSettings.DisplayAllPicturesOnCatalogPages ? 0 : 1))
+                    .GetPicturesByProductIdAsync(product.Id, _catalogSettings.DisplayAllPicturesOnCatalogPages ? 0 : 1))
                     .DefaultIfEmpty(null);
                 var pictureModels = await pictures
                     .SelectAwait(async picture => await preparePictureModelAsync(picture))
@@ -797,7 +800,7 @@ namespace Nop.Web.Factories
 
                         var (finalPriceWithoutDiscountBase, _) = await _taxService.GetProductPriceAsync(product, (await _priceCalculationService.GetFinalPriceAsync(product, customer, store, includeDiscounts: false)).finalPrice);
                         var (finalPriceWithDiscountBase, _) = await _taxService.GetProductPriceAsync(product, (await _priceCalculationService.GetFinalPriceAsync(product, customer, store)).finalPrice);
-                        
+
                         var oldPrice = await _currencyService.ConvertFromPrimaryStoreCurrencyAsync(oldPriceBase, currentCurrency);
                         var finalPriceWithoutDiscount = await _currencyService.ConvertFromPrimaryStoreCurrencyAsync(finalPriceWithoutDiscountBase, currentCurrency);
                         var finalPriceWithDiscount = await _currencyService.ConvertFromPrimaryStoreCurrencyAsync(finalPriceWithDiscountBase, currentCurrency);
@@ -937,6 +940,14 @@ namespace Nop.Web.Factories
                 await _priceFormatter.FormatPriceAsync(minimumCustomerEnteredPrice, false, false),
                 await _priceFormatter.FormatPriceAsync(maximumCustomerEnteredPrice, false, false));
 
+            model.TargetPrice = await _priceFormatter.FormatPriceAsync(maximumCustomerEnteredPrice, true, false);
+
+            var osIds = new List<int> { (int)OrderStatus.Complete };
+            var subTotal = (await _orderService.SearchOrdersAsync(productId: product.Id, osIds: osIds))?.Select(x => x.OrderSubtotalInclTax)?.Sum() ?? decimal.Zero;
+            model.RaisedPrice = await _priceFormatter.FormatPriceAsync(await _currencyService.ConvertFromPrimaryStoreCurrencyAsync(subTotal, currentCurrency), true, false);
+
+            model.ProgressPercentage = (int)Math.Round((subTotal / maximumCustomerEnteredPrice) * 100);
+
             return model;
         }
 
@@ -956,7 +967,7 @@ namespace Nop.Web.Factories
 
             var model = new List<ProductDetailsModel.ProductAttributeModel>();
             var store = updatecartitem != null ? await _storeService.GetStoreByIdAsync(updatecartitem.StoreId) : await _storeContext.GetCurrentStoreAsync();
-            
+
             var productAttributeMapping = await _productAttributeService.GetProductAttributeMappingsByProductIdAsync(product.Id);
             foreach (var attribute in productAttributeMapping)
             {
@@ -1186,15 +1197,15 @@ namespace Nop.Web.Factories
                         customer, store, decimal.Zero, _catalogSettings.DisplayTierPricesWithDiscounts,
                         tierPrice.Quantity)).finalPrice)).price;
 
-                       var price = await _currencyService.ConvertFromPrimaryStoreCurrencyAsync(priceBase, await _workContext.GetWorkingCurrencyAsync());
+                    var price = await _currencyService.ConvertFromPrimaryStoreCurrencyAsync(priceBase, await _workContext.GetWorkingCurrencyAsync());
 
-                       return new ProductDetailsModel.TierPriceModel
-                       {
-                           Quantity = tierPrice.Quantity,
-                           Price = await _priceFormatter.FormatPriceAsync(price, false, false),
-                           PriceValue = price
-                       };
-                   }).ToListAsync();
+                    return new ProductDetailsModel.TierPriceModel
+                    {
+                        Quantity = tierPrice.Quantity,
+                        Price = await _priceFormatter.FormatPriceAsync(price, false, false),
+                        PriceValue = price
+                    };
+                }).ToListAsync();
 
             return model;
         }
@@ -1250,7 +1261,7 @@ namespace Nop.Web.Factories
 
             //prepare picture models
             var productPicturesCacheKey = _staticCacheManager.PrepareKeyForDefaultCache(NopModelCacheDefaults.ProductDetailsPicturesModelKey
-                , product, defaultPictureSize, isAssociatedProduct, 
+                , product, defaultPictureSize, isAssociatedProduct,
                 await _workContext.GetWorkingLanguageAsync(), _webHelper.IsCurrentConnectionSecured(), await _storeContext.GetCurrentStoreAsync());
             var cachedPictures = await _staticCacheManager.GetAsync(productPicturesCacheKey, async () =>
             {
@@ -1278,7 +1289,7 @@ namespace Nop.Web.Factories
 
                 //all pictures
                 var pictureModels = new List<PictureModel>();
-                for (var i = 0; i < pictures.Count; i++ )
+                for (var i = 0; i < pictures.Count; i++)
                 {
                     var picture = pictures[i];
 
@@ -1310,7 +1321,7 @@ namespace Nop.Web.Factories
             });
 
             var allPictureModels = cachedPictures.PictureModels;
-            
+
             //all videos
             var allvideoModels = new List<VideoModel>();
             var videos = await _videoService.GetVideosByProductIdAsync(product.Id);
@@ -1751,7 +1762,7 @@ namespace Nop.Web.Factories
             var currentStore = await _storeContext.GetCurrentStoreAsync();
 
             var productReviews = await _productService.GetAllProductReviewsAsync(
-                approved: true, 
+                approved: true,
                 productId: product.Id,
                 storeId: _catalogSettings.ShowProductReviewsPerStore ? currentStore.Id : 0);
 
@@ -2026,7 +2037,7 @@ namespace Nop.Web.Factories
         /// <param name="customer">Customer entity; required if prePopulateWithCustomerFields is true</param>
         /// <param name="overrideAttributesXml">Overridden address attributes in XML format; pass null to use CustomAttributes of the address entity</param>
         /// <returns>A task that represents the asynchronous operation</returns>
-        public virtual async Task PrepareCustomerProductModelAsync(CustomerProductModel model, 
+        public virtual async Task PrepareCustomerProductModelAsync(CustomerProductModel model,
             Product product, bool excludeProperties,
             ProductSettings productSettings,
             bool prePopulateWithCustomerFields = false,
@@ -2045,23 +2056,23 @@ namespace Nop.Web.Factories
                 model.Name = product.Name;
                 model.ShortDescription = product.ShortDescription;
                 model.FullDescription = product.FullDescription;
-            }          
+            }
 
             if (product == null && prePopulateWithCustomerFields)
             {
                 if (customer == null)
                     throw new Exception("Customer cannot be null when prepopulating a Campaign");
-            //    model.Name = customer.n;
-            //    model.FirstName = customer.FirstName;
-            //    model.LastName = customer.LastName;
-            //    model.Company = customer.Company;
-            //    model.Address1 = customer.StreetAddress;
-            //    model.Address2 = customer.StreetAddress2;
-            //    model.ZipPostalCode = customer.ZipPostalCode;
-            //    model.City = customer.City;
-            //    model.County = customer.County;
-            //    model.PhoneNumber = customer.Phone;
-            //    model.FaxNumber = customer.Fax;
+                //    model.Name = customer.n;
+                //    model.FirstName = customer.FirstName;
+                //    model.LastName = customer.LastName;
+                //    model.Company = customer.Company;
+                //    model.Address1 = customer.StreetAddress;
+                //    model.Address2 = customer.StreetAddress2;
+                //    model.ZipPostalCode = customer.ZipPostalCode;
+                //    model.City = customer.City;
+                //    model.County = customer.County;
+                //    model.PhoneNumber = customer.Phone;
+                //    model.FaxNumber = customer.Fax;
             }
 
             //form fields
@@ -2094,7 +2105,7 @@ namespace Nop.Web.Factories
                 var prova = await _workContext.GetCurrentVendorAsync();
             }
         }
-                
+
 
         /// <summary>
         /// Prepare paged product picture list model
@@ -2134,6 +2145,47 @@ namespace Nop.Web.Factories
                     productPictureModel.OverrideTitleAttribute = picture.TitleAttribute;
 
                     return productPictureModel;
+                });
+            });
+
+            return model;
+        }
+
+        /// <summary>
+        /// Prepare paged product video list model
+        /// </summary>
+        /// <param name="searchModel">Product video search model</param>
+        /// <param name="product">Product</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation
+        /// The task result contains the product video list model
+        /// </returns>
+        public virtual async Task<ProductVideoListModel> PrepareCustomerProductVideoListModelAsync(ProductVideoSearchModel searchModel, Product product)
+        {
+            if (searchModel == null)
+                throw new ArgumentNullException(nameof(searchModel));
+
+            if (product == null)
+                throw new ArgumentNullException(nameof(product));
+
+            //get product videos
+            var productVideos = (await _productService.GetProductVideosByProductIdAsync(product.Id)).ToPagedList(searchModel);
+
+            //prepare grid model
+            var model = await new ProductVideoListModel().PrepareToGridAsync(searchModel, productVideos, () =>
+            {
+                return productVideos.SelectAwait(async productVideo =>
+                {
+                    //fill in model values from the entity
+                    var productVideoModel = productVideo.ToModel<ProductVideoModel>();
+
+                    //fill in additional values (not existing in the entity)
+                    var video = (await _videoService.GetVideoByIdAsync(productVideo.VideoId))
+                        ?? throw new Exception("Video cannot be loaded");
+
+                    productVideoModel.VideoUrl = video.VideoUrl;
+
+                    return productVideoModel;
                 });
             });
 

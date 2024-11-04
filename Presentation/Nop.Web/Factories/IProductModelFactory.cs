@@ -27,7 +27,9 @@ namespace Nop.Web.Factories
         /// The task result contains the product picture list model
         /// </returns>
         Task<ProductPictureListModel> PrepareCustomerProductPictureListModelAsync(ProductPictureSearchModel searchModel, Product product);
-        
+
+        Task<ProductVideoListModel> PrepareCustomerProductVideoListModelAsync(ProductVideoSearchModel searchModel, Product product);
+
         /// <summary>
         /// Get the product template view path
         /// </summary>

@@ -1,0 +1,37 @@
+﻿@model CustomerProductEditModel
+@{
+    Layout = "_CustomerProductsLayout.cshtml";
+
+    //title
+    NopHtml.AddTitleParts(T("PageTitle.Account").Text);
+    //page class
+    NopHtml.AppendPageCssClassParts("html-account-page");
+    NopHtml.AppendPageCssClassParts("html-address-edit-page");
+}
+@section left
+{
+    @await Component.InvokeAsync(typeof(CustomerNavigationViewComponent), new { selectedTabId = CustomerNavigationEnum.CustomerProducts })
+}
+
+
+
+
+<form asp-controller="Customer" asp-action="ProductEdit" method="post" id="update-customer-product-form">
+    @Html.AntiForgeryToken()
+    <div class="page account-page product-edit-page">
+        <div class="page-title">
+            <h1>@T("Account.MyAccount") - @T("Account.CustomerProducts.Edit")</h1>
+        </div>
+        <div class="page-body">
+            <div asp-validation-summary="ModelOnly" class="message-error"></div>
+            @{
+                var dataDictProduct = new ViewDataDictionary(ViewData);
+                dataDictProduct.TemplateInfo.HtmlFieldPrefix = "Product";
+                        @await Html.PartialAsync("_CreateOrUpdate.cshtml", Model)
+            }
+            <div class="buttons">
+                <button type="submit" class="button-1" id="update-customer-product-btn">@T("Common.Save")</button>
+            </div>
+        </div>
+    </div>
+</form>

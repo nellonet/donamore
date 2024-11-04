@@ -3,17 +3,9 @@
 @{
     var showTour = ViewBag.ShowTour ?? false;
 
-    // const string hideInfoBlockAttributeName = "ProductPage.HideInfoBlock";
-    // var customer = await workContext.GetCurrentCustomerAsync();
-    // var hideInfoBlock = showTour ? false : await genericAttributeService.GetAttributeAsync<bool>(customer, hideInfoBlockAttributeName);
-    NopHtml.AppendScriptParts(ResourceLocation.Head, "~/lib_npm/jquery/jquery.min.js"); 
-    
 }
 
-@* <script src="~/lib_npm/jquery-tageditor/jquery.caret.min.js"></script>
-<script src="~/lib_npm/jquery-tageditor/jquery.tag-editor.min.js"></script>
-<link rel="stylesheet" href="~/lib_npm/jquery-tageditor/jquery.tag-editor.css"> *@
-<link href="~/css/admin/styles.css" rel="stylesheet" />
+
 
 <input class="product-id" asp-for="Id" type="hidden" />
 <div class="edit-product">
