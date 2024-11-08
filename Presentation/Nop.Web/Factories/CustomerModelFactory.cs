@@ -78,7 +78,6 @@ namespace Nop.Web.Factories
         private readonly IWorkContext _workContext;
         private readonly MediaSettings _mediaSettings;
         private readonly OrderSettings _orderSettings;
-        private readonly ProductSettings _productSettings;
         private readonly RewardPointsSettings _rewardPointsSettings;
         private readonly SecuritySettings _securitySettings;
         private readonly TaxSettings _taxSettings;
@@ -123,7 +122,6 @@ namespace Nop.Web.Factories
             IWorkContext workContext,
             MediaSettings mediaSettings,
             OrderSettings orderSettings,
-            ProductSettings productSettings,
             RewardPointsSettings rewardPointsSettings,
             SecuritySettings securitySettings,
             TaxSettings taxSettings,
@@ -164,7 +162,6 @@ namespace Nop.Web.Factories
             _workContext = workContext;
             _mediaSettings = mediaSettings;
             _orderSettings = orderSettings;
-            _productSettings = productSettings;
             _rewardPointsSettings = rewardPointsSettings;
             _securitySettings = securitySettings;
             _taxSettings = taxSettings;
@@ -610,14 +607,6 @@ namespace Nop.Web.Factories
                 ItemClass = "customer-addresses"
             });
 
-            model.CustomerNavigationItems.Add(new CustomerNavigationItemModel
-            {
-                RouteName = "CustomerProducts",
-                Title = await _localizationService.GetResourceAsync("Account.CustomerProducts"),
-                Tab = (int)CustomerNavigationEnum.CustomerProducts,
-                ItemClass = "customer-products"
-            });
-
             if (!_customerSettings.HideDownloadableProductsTab)
             {
                 model.CustomerNavigationItems.Add(new CustomerNavigationItemModel
@@ -789,32 +778,6 @@ namespace Nop.Web.Factories
                     addressSettings: _addressSettings,
                     loadCountries: async () => await _countryService.GetAllCountriesAsync((await _workContext.GetWorkingLanguageAsync()).Id));
                 model.Addresses.Add(addressModel);
-            }
-            return model;
-        }
-
-        /// <summary>
-        /// Prepare the customer product list model
-        /// </summary>
-        /// <returns>
-        /// A task that represents the asynchronous operation
-        /// The task result contains the customer jproduct list model
-        /// </returns>
-        public virtual async Task<CustomerProductListModel> PrepareCustomerProductListModelAsync()
-        {
-            var customer = await _workContext.GetCurrentCustomerAsync();          
-
-            var products = await (await _customerService.GetProductsByCustomerIdAsync(customer.Id)).ToListAsync();
-
-            var model = new CustomerProductListModel();
-            foreach (var product in products)
-            {
-                var productModel = new CustomerProductModel();
-                await _productModelFactory.PrepareCustomerProductModelAsync(productModel,
-                    product: product,
-                    excludeProperties: false,
-                    productSettings: _productSettings);
-                model.Products.Add(productModel);
             }
             return model;
         }

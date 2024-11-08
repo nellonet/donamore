@@ -1,0 +1,11 @@
+﻿{
+  "Group": "Sparkling Softech",
+  "FriendlyName": "Customer Products",
+  "SystemName": "Widgets.CustomerProducts",
+  "Version": "1.0.0",
+  "SupportedVersions": [ "4.60" ],
+  "Author": "Sparkling Softech Solution",
+  "DisplayOrder": 1,
+  "FileName": "Sparkling.Plugin.Widgets.CustomerProducts.dll",
+  "Description": "This plugin allows you to add product into the catalog from a front end."
+}

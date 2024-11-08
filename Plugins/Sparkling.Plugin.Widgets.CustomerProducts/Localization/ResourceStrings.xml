@@ -1,0 +1,179 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Language Name="English" SupportedVersion="4.60">
+	<!-- Sitemap Resources -->
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.MainMenu.Title">
+		<Value>Sparkling Softech</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.ChildMenu.CustomerProducts">
+		<Value>Customer Products</Value>
+	</LocaleResource>
+	<!-- End of Sitemap Resources -->
+	
+	<!-- Configuration Resources -->
+	<LocaleResource Name="Sparkling.Plugin.Widgets.CustomerProducts.Configuration">
+		<Value>Configuration</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Admin.Configuration.Fields.EnablePlugin">
+		<Value>Enable Plugin</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Admin.Configuration.Fields.EnablePlugin.Hint">
+		<Value>If you check this option you will enable customer products plugin</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Admin.Configuration.Fields.ShortDescriptionEnabled">
+		<Value>Enable Short Description</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Admin.Configuration.Fields.ShortDescriptionEnabled.Hint">
+		<Value>Enable Short Description.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Admin.Configuration.Fields.ShortDescriptionRequired">
+		<Value>Short Description Required</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Admin.Configuration.Fields.ShortDescriptionRequired.Hint">
+		<Value>Short Description Required.</Value>
+	</LocaleResource>
+	<!-- End of Configuration Resources -->
+	
+	<!-- Account Navigation Resources -->
+	<LocaleResource Name="Plugin.Widgets.Account.CustomerProducts">
+		<Value>Customer Products</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.Account.CustomerProducts.AddNewProduct">
+		<Value>Add a new product</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.Account.CustomerProducts.EditProductDetails">
+		<Value>Edit a product details</Value>
+	</LocaleResource>
+	<!-- End of Account Navigation Resources -->
+
+	<!-- Product Resources -->
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Catalog.Products.Fields.Name">
+		<Value>Product name</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Catalog.Products.Fields.Name.Hint">
+		<Value>The name of the product.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Catalog.Products.Fields.Name.Required">
+		<Value>Please provide a name.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Catalog.Products.Fields.ShortDescription">
+		<Value>Short description</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Catalog.Products.Fields.ShortDescription.Hint">
+		<Value>Short description is the text that is displayed in product list i.e. category / manufacturer pages.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Catalog.Products.Fields.ShortDescription.Required">
+		<Value>Please provide a short description.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Catalog.Products.Fields.FullDescription">
+		<Value>Full description</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Catalog.Products.Fields.FullDescription.Hint">
+		<Value>Full description is the text that is displayed in product page.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Catalog.Products.Fields.MetaDescription">
+		<Value>Meta description</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Catalog.Products.Fields.MetaDescription.Hint">
+		<Value>Meta description to be added to product page header.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Catalog.Products.Fields.MetaKeywords">
+		<Value>Meta keywords</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Catalog.Products.Fields.MetaKeywords.Hint">
+		<Value>Meta keywords to be added to product page header.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Catalog.Products.Fields.MetaTitle">
+		<Value>Meta title</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Catalog.Products.Fields.MetaTitle.Hint">
+		<Value>Override the page title. The default is the name of the product.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Catalog.Products.Fields.SeName">
+		<Value>Search engine friendly page name</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Catalog.Products.Fields.SeName.Hint">
+		<Value>Set a search engine friendly page name e.g. 'the-best-product' to make your page URL 'http://www.yourStore.com/the-best-product'. Leave empty to generate it automatically based on the name of the product.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Catalog.Products.Multimedia.PicturesVideos.SaveBeforeEdit">
+		<Value>You need to save the product before you can upload pictures/videos for this product page.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Catalog.Products.Added">
+		<Value>A product has been added successfully.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Catalog.Products.Updated">
+		<Value>A product has been updated successfully.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Catalog.Products.NoProducts">
+		<Value>No products found.</Value>
+	</LocaleResource>
+	<!-- End of Product Resources -->
+
+	<!-- Picture Resources -->
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Catalog.Products.Multimedia.Pictures">
+		<Value>Pictures</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Catalog.Products.Multimedia.Pictures.AddNew">
+		<Value>Add a new picture</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Catalog.Products.Multimedia.Pictures.Fields.Picture">
+		<Value>Picture</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Catalog.Products.Multimedia.Pictures.Fields.Picture.Hint">
+		<Value>You can choose multiple images to upload at once. If the picture size exceeds your stores max image size setting, it will be automatically resized.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Catalog.Products.Multimedia.Pictures.Fields.DisplayOrder">
+		<Value>Display order</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Catalog.Products.Multimedia.Pictures.Fields.DisplayOrder.Hint">
+		<Value>Display order of the picture. 1 represents the top of the list.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Catalog.Products.Multimedia.Pictures.Fields.OverrideAltAttribute">
+		<Value>Alt</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Catalog.Products.Multimedia.Pictures.Fields.OverrideAltAttribute.Hint">
+		<Value>Override "alt" attribute for "img" HTML element. If empty, then a default rule will be used (e.g. product name).</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Catalog.Products.Multimedia.Pictures.Fields.OverrideTitleAttribute">
+		<Value>Title</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Catalog.Products.Multimedia.Pictures.Fields.OverrideTitleAttribute.Hint">
+		<Value>Override "title" attribute for "img" HTML element. If empty, then a default rule will be used (e.g. product name).</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Catalog.Products.Multimedia.Pictures.Alert.PictureAdd">
+		<Value>Failed to add product picture.</Value>
+	</LocaleResource>
+	<!-- End of Picture Resources -->
+
+	<!-- Video Resources -->
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Catalog.Products.Multimedia.Videos">
+		<Value>Videos</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProduct.Catalog.Products.Multimedia.Videos.AddNew">
+		<Value>Add a new video</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProduct.Catalog.Products.Multimedia.Videos.AddButton">
+		<Value>Add product video</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Catalog.Products.Multimedia.Videos.Fields.Preview">
+		<Value>Preview</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Catalog.Products.Multimedia.Videos.Fields.VideoUrl">
+		<Value>Embed video URL</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Catalog.Products.Multimedia.Videos.Fields.VideoUrl.Hint">
+		<Value>Specify the URL path to the video.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Catalog.Products.Multimedia.Videos.Fields.DisplayOrder">
+		<Value>Display order</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Catalog.Products.Multimedia.Videos.Fields.DisplayOrder.Hint">
+		<Value>Display order of the video. 1 represents the top of the list.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Catalog.Products.Multimedia.Videos.Alert.VideoAdd">
+		<Value>Failed to add product video.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Plugin.Widgets.CustomerProducts.Catalog.Products.Multimedia.Videos.Alert.VideoUpdate">
+		<Value>Failed to update product video.</Value>
+	</LocaleResource>
+	<!-- End of Video Resources -->
+</Language>
