@@ -1643,50 +1643,6 @@ namespace Nop.Services.Customers
         }
 
         /// <summary>
-        /// Gets a list of addresses mapped to customer
-        /// </summary>
-        /// <param name="customerId">Customer identifier</param>
-        /// <returns>
-        /// A task that represents the asynchronous operation
-        /// The task result contains the result
-        /// </returns>
-        public virtual async Task<IList<Product>> GetProductsByCustomerIdAsync(int customerId)
-        {        
-            var query = from product in _productRepository.Table                        
-                        where (product.VendorId == customerId && product.Deleted == false)
-                        select product;
-
-            //imposto la key a 0 perchè non riesco a cancellare la cache, in questo modo lege sempre dal db
-            var key = _staticCacheManager.PrepareKeyForShortTermCache(NopCustomerServicesDefaults.CustomerProductsCacheKey, customerId);
-            key.CacheTime = 0;
-
-            return await _staticCacheManager.GetAsync(key, async () => await query.ToListAsync());                         
-        }
-        
-        /// <summary>
-        /// Gets a address mapped to customer
-        /// </summary>
-        /// <param name="customerId">Customer identifier</param>
-        /// <param name="productId">Address identifier</param>
-        /// <returns>
-        /// A task that represents the asynchronous operation
-        /// The task result contains the result
-        /// </returns>
-        public virtual async Task<Product> GetCustomerProductAsync(int customerId, int productId)
-        {
-            if (customerId == 0 || productId == 0)
-                return null;
-
-            var query = from product in _productRepository.Table                        
-                        where product.Id == productId
-                        select product;
-
-            var key = _staticCacheManager.PrepareKeyForShortTermCache(NopCustomerServicesDefaults.CustomerProductCacheKey, customerId, productId);
-
-            return await _staticCacheManager.GetAsync(key, async () => await query.FirstOrDefaultAsync());
-        }
-
-        /// <summary>
         /// Gets a customer billing address
         /// </summary>
         /// <param name="customer">Customer identifier</param>

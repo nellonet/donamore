@@ -594,16 +594,6 @@ namespace Nop.Services.Customers
         Task<IList<Address>> GetAddressesByCustomerIdAsync(int customerId);
 
         /// <summary>
-        /// Gets a list of products mapped to customer
-        /// </summary>
-        /// <param name="customerId">Customer identifier</param>
-        /// <returns>
-        /// A task that represents the asynchronous operation
-        /// The task result contains the 
-        /// </returns>
-        Task<IList<Product>> GetProductsByCustomerIdAsync(int customerId);
-
-        /// <summary>
         /// Gets a address mapped to customer
         /// </summary>
         /// <param name="customerId">Customer identifier</param>
@@ -613,17 +603,6 @@ namespace Nop.Services.Customers
         /// The task result contains the result
         /// </returns>
         Task<Address> GetCustomerAddressAsync(int customerId, int addressId);
-
-        /// <summary>
-        /// Gets a address mapped to customer
-        /// </summary>
-        /// <param name="customerId">Customer identifier</param>
-        /// <param name="productId">Product identifier</param>
-        /// <returns>
-        /// A task that represents the asynchronous operation
-        /// The task result contains the result
-        /// </returns>
-        Task<Product> GetCustomerProductAsync(int customerId, int productId);
 
         /// <summary>
         /// Gets a customer billing address

@@ -952,46 +952,6 @@ namespace Nop.Web.Areas.Admin.Factories
         }
 
         /// <summary>
-        /// Prepare paged customer product list model
-        /// </summary>
-        /// <param name="searchModel">Customer product search model</param>
-        /// <param name="customer">Customer</param>
-        /// <returns>
-        /// A task that represents the asynchronous operation
-        /// The task result contains the customer address list model
-        /// </returns>
-        public virtual async Task<ProductListModel> PrepareCustomerProductListModelAsync(ProductSearchModel searchModel, Customer customer)
-        {
-            if (searchModel == null)
-                throw new ArgumentNullException(nameof(searchModel));
-
-            if (customer == null)
-                throw new ArgumentNullException(nameof(customer));
-
-            //get customer products
-            var products = (await _customerService.GetProductsByCustomerIdAsync(customer.Id))
-                .OrderByDescending(product => product.CreatedOnUtc).ThenByDescending(product => product.Id).ToList()
-                .ToPagedList(searchModel);
-
-            //prepare list model
-            var model = await new ProductListModel().PrepareToGridAsync(searchModel, products, () =>
-            {
-                return products.SelectAwait(async product =>
-                {
-                    //fill in model values from the entity        
-                    var productModel = product.ToModel<ProductModel>();                                      
-
-                    //fill in additional values (not existing in the entity)
-                    await PrepareModelProductHtmlAsync(productModel, product);
-
-                    return productModel;
-                });
-            });
-
-            return model;
-        }
-
-        /// <summary>
         /// Prepare customer address model
         /// </summary>
         /// <param name="model">Customer address model</param>

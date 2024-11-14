@@ -18,6 +18,7 @@ using Nop.Web.Framework.Validators;
 using Sparkling.Plugin.Widgets.CustomerProducts.Extensions;
 using Sparkling.Plugin.Widgets.CustomerProducts.Factories;
 using Sparkling.Plugin.Widgets.CustomerProducts.Models.CustomerProduct;
+using Sparkling.Plugin.Widgets.CustomerProducts.Services;
 using System;
 using System.Linq;
 using System.Net.Http;
@@ -30,6 +31,7 @@ namespace Sparkling.Plugin.Widgets.CustomerProducts.Controllers
         #region Fields
 
         private readonly ICustomerProductsModelFactory _customerProductsModelFactory;
+        private readonly ICustomerProductsService _customerProductsService;
         private readonly ICustomerService _customerService;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILocalizationService _localizationService;
@@ -46,6 +48,7 @@ namespace Sparkling.Plugin.Widgets.CustomerProducts.Controllers
         #region Ctor
 
         public CustomerProductsController(ICustomerProductsModelFactory customerProductsModelFactory,
+            ICustomerProductsService customerProductsService,
             ICustomerService customerService,
             IHttpClientFactory httpClientFactory,
             ILocalizationService localizationService,
@@ -58,6 +61,7 @@ namespace Sparkling.Plugin.Widgets.CustomerProducts.Controllers
             CustomerProductsSettings customerProductsSettings)
         {
             _customerProductsModelFactory = customerProductsModelFactory;
+            _customerProductsService = customerProductsService;
             _customerService = customerService;
             _httpClientFactory = httpClientFactory;
             _localizationService = localizationService;
@@ -120,7 +124,7 @@ namespace Sparkling.Plugin.Widgets.CustomerProducts.Controllers
             if (!await _customerService.IsRegisteredAsync(customer))
                 return Challenge();
 
-            var product = await _customerService.GetCustomerProductAsync(customer.Id, productId);
+            var product = await _customerProductsService.GetCustomerProductAsync(customer.Id, productId);
             if (product != null)
                 await _productService.DeleteProductAsync(product);
 
@@ -172,7 +176,7 @@ namespace Sparkling.Plugin.Widgets.CustomerProducts.Controllers
             if (!await _customerService.IsRegisteredAsync(customer))
                 return Challenge();
 
-            var product = await _customerService.GetCustomerProductAsync(customer.Id, productId);
+            var product = await _customerProductsService.GetCustomerProductAsync(customer.Id, productId);
             if (product == null)
                 return RedirectToRoute("CustomerProducts");
 
@@ -190,7 +194,7 @@ namespace Sparkling.Plugin.Widgets.CustomerProducts.Controllers
             if (!await _customerService.IsRegisteredAsync(customer))
                 return Challenge();
 
-            var product = await _customerService.GetCustomerProductAsync(customer.Id, model.Product.Id);
+            var product = await _customerProductsService.GetCustomerProductAsync(customer.Id, model.Product.Id);
             if (product == null)
                 return RedirectToRoute("CustomerProducts");
 

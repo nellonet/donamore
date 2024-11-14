@@ -8,6 +8,7 @@ using Nop.Web.Areas.Admin.Infrastructure.Mapper.Extensions;
 using Nop.Web.Areas.Admin.Models.Catalog;
 using Nop.Web.Framework.Models.Extensions;
 using Sparkling.Plugin.Widgets.CustomerProducts.Models.CustomerProduct;
+using Sparkling.Plugin.Widgets.CustomerProducts.Services;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -18,6 +19,7 @@ namespace Sparkling.Plugin.Widgets.CustomerProducts.Factories
     {
         #region Fields
 
+        private readonly ICustomerProductsService _customerProductsService;
         private readonly ICustomerService _customerService;
         private readonly IPictureService _pictureService;
         private readonly IProductService _productService;
@@ -29,13 +31,15 @@ namespace Sparkling.Plugin.Widgets.CustomerProducts.Factories
 
         #region Ctor
 
-        public CustomerProductsModelFactory(ICustomerService customerService,
+        public CustomerProductsModelFactory(ICustomerProductsService customerProductsService,
+            ICustomerService customerService,
             IPictureService pictureService,
             IProductService productService,
             IVideoService videoService,
             IWorkContext workContext,
             CustomerProductsSettings customerProductsSettings)
         {
+            _customerProductsService = customerProductsService;
             _customerService = customerService;
             _pictureService = pictureService;
             _productService = productService;
@@ -52,7 +56,7 @@ namespace Sparkling.Plugin.Widgets.CustomerProducts.Factories
         {
             var customer = await _workContext.GetCurrentCustomerAsync();
 
-            var products = await (await _customerService.GetProductsByCustomerIdAsync(customer.Id)).ToListAsync();
+            var products = await (await _customerProductsService.GetProductsByCustomerIdAsync(customer.Id)).ToListAsync();
 
             var model = new CustomerProductsListModel();
 

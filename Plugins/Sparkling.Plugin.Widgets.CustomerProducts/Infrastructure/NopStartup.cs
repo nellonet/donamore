@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Nop.Core.Infrastructure;
 using Sparkling.Plugin.Widgets.CustomerProducts.Factories;
 using Sparkling.Plugin.Widgets.CustomerProducts.Models.CustomerProduct;
+using Sparkling.Plugin.Widgets.CustomerProducts.Services;
 using Sparkling.Plugin.Widgets.CustomerProducts.Validators;
 using Sparkling.Plugin.Widgets.CustomerProducts.ViewEngine;
 
@@ -17,6 +18,9 @@ namespace Sparkling.Plugin.Widgets.CustomerProducts.Infrastructure
         {
             //factories
             services.AddScoped<ICustomerProductsModelFactory, CustomerProductsModelFactory>();
+
+            //services
+            services.AddScoped<ICustomerProductsService, CustomerProductsService>();
 
             //validators
             services.AddTransient<IValidator<CustomerProductsModel>, CustomerProductsValidator>();
