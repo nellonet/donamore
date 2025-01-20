@@ -82,6 +82,10 @@
     {
       "SystemName": "ExternalAuth.Facebook",
       "Version": "1.80"
+    },
+    {
+      "SystemName": "Widgets.CustomerProducts",
+      "Version": "1.0.0"
     }
   ],
   "PluginNamesToUninstall": [],
